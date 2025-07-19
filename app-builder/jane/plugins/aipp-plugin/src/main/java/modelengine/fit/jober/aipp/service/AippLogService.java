@@ -6,10 +6,10 @@
 
 package modelengine.fit.jober.aipp.service;
 
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jober.aipp.dto.aipplog.AippInstLogDataDto;
 import modelengine.fit.jober.aipp.entity.AippInstLog;
 import modelengine.fit.jober.aipp.entity.AippLogData;
-import modelengine.fit.jane.common.entity.OperationContext;
 
 import java.util.List;
 import java.util.Map;
@@ -30,31 +30,6 @@ public interface AippLogService {
      * @return log数据
      */
     List<AippInstLogDataDto> queryAippRecentInstLog(String appId, String type, OperationContext context);
-
-    /**
-     * 查询指定aipp最近轮次的历史记录
-     *
-     * @param aippId 指定aipp的id
-     * @param aippType 指定aipp的类型
-     * @param count 轮次数目
-     * @param context 登录信息
-     * @return log数据
-     */
-    List<AippInstLogDataDto> queryAippRecentInstLog(String aippId, String aippType, Integer count,
-            OperationContext context);
-
-    /**
-     * 查询指定chatId的历史记录,
-     *
-     * @param aippId 指定aipp的id
-     * @param aippType 指定aipp的类型
-     * @param count 轮次数目
-     * @param context 登录信息
-     * @param chatId 会话ID
-     * @return log数据
-     */
-    List<AippInstLogDataDto> queryChatRecentInstLog(String aippId, String aippType, Integer count,
-            OperationContext context, String chatId);
 
     /**
      * 查询指定appId的最近一次会话的历史记录
@@ -118,15 +93,7 @@ public interface AippLogService {
      * @param businessData 业务数据
      * @return 返回插入的日志id
      */
-    String insertLog(String logType, AippLogData logData, Map<String, Object> businessData);
-
-    /**
-     * 插入MSG类型的历史记录
-     *
-     * @param msg MSG日志内容
-     * @param flowData 流程执行上下文数据。
-     */
-    void insertMsgLog(String msg, List<Map<String, Object>> flowData);
+    String insertLogWithInterception(String logType, AippLogData logData, Map<String, Object> businessData);
 
     /**
      * 插入ERROR类型的历史记录
@@ -192,13 +159,6 @@ public interface AippLogService {
     String buildPath(String instId, String parentInstId);
 
     /**
-     * 删除指定实例的历史记录。
-     *
-     * @param instanceId 指定实例的 id。
-     */
-    void deleteInstanceLog(String instanceId);
-
-    /**
      * 查询提示词拼接后的历史记录
      *
      * @param aippId 指定aipp的id
@@ -220,27 +180,18 @@ public interface AippLogService {
     List<AippInstLog> queryBatchAndFilterFullLogsByLogType(List<String> instanceIds, List<String> filterLogTypes);
 
     /**
-     * 查询指定实例的日志，并过滤掉指定类型的日志。
-     *
-     * @param instanceId 表示指定实例 id 的 {@link String}。
-     * @param filterLogTypes 表示指定日志类型列表的 {@link List}{@code <}{@link String}{@code >}。
-     * @return 表示查询到的日志列表的 {@link List}{@code <}{@link AippInstLog}{@code >}。
-     */
-    List<AippInstLog> queryAndFilterLogsByLogType(String instanceId, List<String> filterLogTypes);
-
-    /**
-     * 查询指定实例且指定类型的的日志。
-     *
-     * @param instanceId 表示指定实例 id 的 {@link String}。
-     * @param logTypes 表示指定日志类型列表的 {@link List}{@code <}{@link String}{@code >}。
-     * @return 表示查询到的日志列表的 {@link List}{@code <}{@link AippInstLog}{@code >}。
-     */
-    List<AippInstLog> queryLogsByInstanceIdAndLogTypes(String instanceId, List<String> logTypes);
-
-    /**
      * 删除指定的对话历史记录。
      *
      * @param logIds 表示指定的日志 id 列表的 {@link List}{@code <}{@link Long}{@code >}。
      */
     void deleteLogs(List<Long> logIds);
+
+    /**
+     * 插入一条日志记录，但不触发发送逻辑。
+     *
+     * @param logType 表示日志类型的 {@link String}。
+     * @param logData 表示日志主体数据的 {@link AippLogData} 实例。
+     * @param businessData 表示业务数据的 {@link Map}{@code <}{@link String}{@code , }{@link Object}{@code >}。
+     */
+    void insertLog(String logType, AippLogData logData, Map<String, Object> businessData);
 }

@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * @since 2024-12-16
  */
 @Component
-@RequestMapping(path = "/v1/tenants/{tenantId}/file", group = "文件上传接口")
+@RequestMapping(path = "/api/app/v1/tenants/{tenantId}/file", group = "文件上传接口")
 public class FileController extends AbstractController {
     private final FileServiceAdapter fileService;
 
@@ -69,7 +69,7 @@ public class FileController extends AbstractController {
     @PostMapping(summary = "上传文件", description = "该接口可以往指定应用上传文件。")
     @ResponseStatus(HttpResponseStatus.CREATED)
     public Rsp<FileUploadInfo> uploadFile(HttpClassicServerRequest httpRequest,
-            @PathVariable("tenantId") String tenantId, @RequestQuery(value = "app_id", required = false) String appId,
+            @PathVariable("tenantId") String tenantId, @RequestQuery(value = "app_id", required = true) String appId,
             PartitionedEntity receivedFile) throws IOException {
         List<NamedEntity> entityList =
                 receivedFile.entities().stream().filter(NamedEntity::isFile).collect(Collectors.toList());

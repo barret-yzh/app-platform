@@ -27,7 +27,7 @@ import modelengine.fitframework.annotation.Component;
  * @since 2024-12-17
  */
 @Component
-@RequestMapping(path = "/v1/tenants/{tenantId}/translation", group = "语音文字互转接口")
+@RequestMapping(path = "/api/app/v1/tenants/{tenantId}/translation", group = "语音文字互转接口")
 public class AudioController extends AbstractController {
     private final VoiceService voiceService;
 

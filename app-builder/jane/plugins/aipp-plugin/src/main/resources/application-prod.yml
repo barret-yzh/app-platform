@@ -38,7 +38,8 @@ app-engine:
   exclude-names:
     - 'i18n_appBuilder_*demo*'
   resource:
-    path-prefix: /static/
+    url-prefix: /static/
+    path: /var/share
   form:
     create:
       maximumNum: 400
@@ -51,6 +52,14 @@ app-engine:
   file:
     upload:
       maxStorageRatio: 0.9
+  ttl:
+    businessData: 15
+    nonBusinessData: 1
+  max-number: 200
+  question:
+    max-length: 20000
+  user-context:
+    max-length: 500
 elsa:
   endpoint:
   elsaKey:
@@ -73,9 +82,19 @@ tool:
     TEXTTOIMAGENODESTATE: textToImageNodeState
     FILEEXTRACTNODESTATE: fileExtractionNodeState
     LOOPNODESTATE: loopNodeState
+    PARALLELNODESTATE: parallelNodeState
 export-meta:
   version: 1.0.1
 sensitive:
   replace:
     - pattern: "\"timestamp\":\"[^\"]+\""
       to: "\"timestamp\":\"***\""
+aipp:
+  instance:
+    log:
+      file:
+        path: /var/share/backup/aipp-instance-log/
+chat:
+  session:
+    file:
+      path: /var/share/backup/chat-session/

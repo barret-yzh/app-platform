@@ -14,9 +14,7 @@ import modelengine.fit.jober.aipp.dto.chat.CreateAppChatRequest;
 import modelengine.fit.jober.aipp.genericable.adapter.AppChatServiceAdapter;
 import modelengine.fit.jober.aipp.service.AppChatService;
 import modelengine.fitframework.annotation.Component;
-import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.flowable.Choir;
-import modelengine.fitframework.serialization.ObjectSerializer;
 
 import java.util.Map;
 
@@ -30,17 +28,18 @@ import java.util.Map;
 public class AppChatServiceAdapterImpl implements AppChatServiceAdapter {
     private final AppChatService appChatService;
 
-    private final ObjectSerializer serializer;
-
-    public AppChatServiceAdapterImpl(AppChatService appChatService, @Fit(alias = "json") ObjectSerializer serializer) {
+    /**
+     * 用历史会话服务接口 {@link AppChatService} 构造 {@link AppChatServiceAdapterImpl}。
+     *
+     * @param appChatService 表示历史会话服务接口的 {@link AppChatService}。
+     */
+    public AppChatServiceAdapterImpl(AppChatService appChatService) {
         this.appChatService = notNull(appChatService, "The app chat service must not be null.");
-        this.serializer = notNull(serializer, "The serializer must not be null.");
     }
 
     @Override
     public Choir<Object> chat(String appId, ChatRequest params, OperationContext operationContext, boolean isDebug) {
-        CreateAppChatRequest createAppChatRequest = this.serializer.deserialize(this.serializer.serialize(params),
-                CreateAppChatRequest.class);
+        CreateAppChatRequest createAppChatRequest = this.convertToCreateAppChatRequest(params);
         createAppChatRequest.setAppId(appId);
         return this.appChatService.chat(createAppChatRequest, operationContext, isDebug);
     }
@@ -49,5 +48,28 @@ public class AppChatServiceAdapterImpl implements AppChatServiceAdapter {
     public Choir<Object> restartChat(String currentInstanceId, Map<String, Object> additionalContext,
             OperationContext operationContext) {
         return this.appChatService.restartChat(currentInstanceId, additionalContext, operationContext);
+    }
+
+    private CreateAppChatRequest convertToCreateAppChatRequest(ChatRequest params) {
+        if (params == null) {
+            return null;
+        }
+        ChatRequest.Context ctx = params.getContext();
+        CreateAppChatRequest.Context newCtx = null;
+        if (ctx != null) {
+            newCtx = CreateAppChatRequest.Context.builder()
+                    .useMemory(ctx.getUseMemory())
+                    .userContext(ctx.getUserContext())
+                    .atAppId(ctx.getAtAppId())
+                    .atChatId(ctx.getAtChatId())
+                    .dimension(ctx.getDimension())
+                    .dimensionId(ctx.getDimensionId())
+                    .build();
+        }
+        return CreateAppChatRequest.builder()
+                .chatId(params.getChatId())
+                .question(params.getQuestion())
+                .context(newCtx)
+                .build();
     }
 }

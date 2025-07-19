@@ -29,4 +29,9 @@ public interface AppChatNumMapper {
      * @param chatMode 应用对话方式
      */
     void minusOne(String appId, String chatMode);
+
+    /**
+     * 清空所有 app 计数
+     */
+    void clearNum();
 }

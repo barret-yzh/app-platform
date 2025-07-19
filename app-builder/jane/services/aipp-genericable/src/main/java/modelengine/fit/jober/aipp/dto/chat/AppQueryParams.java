@@ -26,9 +26,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AppQueryParams {
-    @RequestQuery(name = "appIds", required = false)
+    @RequestQuery(name = "ids", required = false)
     @Property(description = "查询的id列表")
-    private List<String> appIds;
+    private List<String> ids;
 
     @RequestQuery(name = "name", required = false)
     @Property(description = "查询的名字")

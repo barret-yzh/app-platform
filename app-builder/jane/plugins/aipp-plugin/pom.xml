@@ -102,7 +102,7 @@
         </dependency>
 
         <dependency>
-            <groupId>modelengine.fit.jade.fel</groupId>
+            <groupId>org.fitframework.fel</groupId>
             <artifactId>fel-flow</artifactId>
         </dependency>
         <dependency>
@@ -123,12 +123,20 @@
             <artifactId>opentelemetry-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+        </dependency>
+        <dependency>
             <groupId>modelengine.jade.service</groupId>
             <artifactId>aipp-prompt-builder-service</artifactId>
         </dependency>
         <dependency>
             <groupId>modelengine.fit.jade.waterflow</groupId>
             <artifactId>waterflow-graph-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.fitframework.fel</groupId>
+            <artifactId>tool-mcp-client-service</artifactId>
         </dependency>
 
         <!-- Redis -->
@@ -149,7 +157,7 @@
         <dependency>
             <groupId>org.fitframework.plugin</groupId>
             <artifactId>fit-message-serializer-json-jackson</artifactId>
-            <version>3.5.0-M2.1</version>
+            <version>3.5.0-M4</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -179,11 +187,6 @@
         <dependency>
             <groupId>org.fitframework.extension</groupId>
             <artifactId>fit-schedule</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.fitframework.fel</groupId>
-            <artifactId>tool-service</artifactId>
-            <version>3.5.0-M2.1</version>
         </dependency>
         <dependency>
             <groupId>modelengine.fit.jade.service</groupId>
@@ -265,6 +268,10 @@
             <version>2.9.3</version>
         </dependency>
         <dependency>
+            <groupId>modelengine.fit.jade.tool</groupId>
+            <artifactId>sync-tool-call-service</artifactId>
+        </dependency>
+        <dependency>
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>knowledge-service</artifactId>
         </dependency>
@@ -299,7 +306,7 @@
             <plugin>
                 <groupId>org.fitframework.fel</groupId>
                 <artifactId>tool-maven-plugin</artifactId>
-                <version>3.5.0-M2</version>
+                <version>3.5.0-M4</version>
                 <executions>
                     <execution>
                         <id>build-tool</id>

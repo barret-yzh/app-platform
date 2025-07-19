@@ -10,7 +10,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import modelengine.fit.jober.aipp.constants.AippConst;
 import modelengine.fitframework.annotation.Property;
 
 import java.util.Map;
@@ -49,10 +48,10 @@ public class ChatRequest {
         @Property(description = "用户自定义输入", name = "userContext")
         private Map<String, Object> userContext;
 
-        @Property(description = "at其它应用", name = AippConst.BS_AT_APP_ID)
+        @Property(description = "at其它应用", name = "atAppId")
         private String atAppId;
 
-        @Property(description = "at其它应用的对话", name = AippConst.BS_AT_CHAT_ID)
+        @Property(description = "at其它应用的对话", name = "atChatId")
         private String atChatId;
 
         @Property(description = "产品的信息", name = "dimension")

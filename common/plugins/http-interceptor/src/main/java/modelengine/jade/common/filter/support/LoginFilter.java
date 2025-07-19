@@ -32,20 +32,15 @@ import java.util.List;
  */
 @Component
 public class LoginFilter implements HttpServerFilter {
-    private final List<String> matchPatterns;
-    private final List<String> mismatchPatterns;
     private final AuthenticationService authenticationService;
     private static final Logger log = Logger.get(LoginFilter.class);
 
     /**
-     * 根据配置创建过滤器的实例。
+     * 用用户认证服务 {@link AuthenticationService} 构造 {@link LoginFilter}。
      *
      * @param authenticationService 表示用户认证服务的 {@link AuthenticationService}。
      */
     public LoginFilter(AuthenticationService authenticationService) {
-        // 待优化为配置化
-        this.matchPatterns = Collections.singletonList("/**");
-        this.mismatchPatterns = Collections.emptyList();
         this.authenticationService = Validation.notNull(authenticationService, "The auth service cannot be null.");
     }
 
@@ -61,12 +56,12 @@ public class LoginFilter implements HttpServerFilter {
 
     @Override
     public List<String> matchPatterns() {
-        return this.matchPatterns;
+        return Collections.singletonList("/**");
     }
 
     @Override
     public List<String> mismatchPatterns() {
-        return this.mismatchPatterns;
+        return Collections.singletonList("/api/app/v1/**");
     }
 
     @Override

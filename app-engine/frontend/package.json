@@ -6,8 +6,11 @@
   "scripts": {
     "start": "webpack serve --progress --profile --mode development --host localhost --port 3310 --config webpack.dev.js",
     "start:single": "webpack serve --config webpack.dev.single.js",
+    "start:plugin": "bash ./plugins/plugin.sh && npm run start",
     "build:prod": "webpack --mode production --config webpack.prod.js",
-    "build:single": "webpack --mode production  --config webpack.prod.single.js"
+    "build:single": "webpack --mode production  --config webpack.prod.single.js",
+    "build:plugin:prod": "bash ./plugins/plugin.sh prod",
+    "build:plugin:single": "bash ./plugins/plugin.sh prod spa"
   },
   "license": "ISC",
   "devDependencies": {
@@ -61,7 +64,7 @@
     "@fit-elsa/elsa-core": "file:../../../../project/fit-framework/framework/elsa/fit-elsa",
     "@fit-elsa/elsa-react": "file:../../../../project/fit-framework/framework/elsa/fit-elsa-react",
     "antd": "4.24.13",
-    "axios": "1.7.4",
+    "axios": "1.8.2",
     "dayjs": "1.11.10",
     "echarts": "5.4.3",
     "echarts-for-react": "3.0.2",
@@ -80,7 +83,7 @@
     "react-router": "5.3.4",
     "react-router-dom": "5.3.4",
     "redux": "4.2.1",
-    "tinymce": "6.8.4",
+    "tinymce": "7.2.0",
     "xss": "1.0.15"
   }
 }

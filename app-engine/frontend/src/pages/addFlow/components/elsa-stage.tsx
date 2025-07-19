@@ -22,7 +22,7 @@ import { getAddFlowConfig, getEvaluateConfig } from '@/shared/http/appBuilder';
 import { useAppDispatch, useAppSelector } from '@/store/hook';
 import { setAppInfo, setValidateInfo } from '@/store/appInfo/appInfo';
 import { setTestStatus, setTestTime } from '@/store/flowTest/flowTest';
-import { FlowContext } from '../../aippIndex/context';
+import { FlowContext, RenderContext } from '../../aippIndex/context';
 import CreateTestSet from '../../appDetail/evaluate/testSet/createTestset/createTestSet';
 import AddSearch from '../../configForm/configUi/components/add-search';
 import { configMap } from '../config';
@@ -69,9 +69,11 @@ const Stage = (props) => {
   const [knowledgeConfigId, setKnowledgeConfigId] = useState('');
   const { CONFIGS } = configMap[process.env.NODE_ENV];
   const { type, appInfo, setFlowInfo } = useContext(FlowContext);
+  const { renderRef, elsaReadOnlyRef } = useContext(RenderContext);
   const testStatus = useAppSelector((state) => state.flowTestStore.testStatus);
   const appValidateInfo = useAppSelector((state) => state.appStore.validateInfo);
   const choseNodeId = useAppSelector((state) => state.appStore.choseNodeId);
+  const pluginList = useAppSelector((state) => state.chatCommonStore.pluginList);
   const { tenantId, appId } = useParams();
   const testStatusRef = useRef<any>();
   const modelCallback = useRef<any>();
@@ -79,7 +81,6 @@ const Stage = (props) => {
   const pluginCallback = useRef<any>();
   const formCallback = useRef<any>();
   const currentApp = useRef<any>();
-  const render = useRef<any>(false);
   const currentChange = useRef<any>(false);
   const modalRef = useRef<any>();
   const openModalRef = useRef<any>();
@@ -91,16 +92,16 @@ const Stage = (props) => {
   const connectKnowledgeEvent = useRef<any>();
   const dispatch = useAppDispatch();
   useEffect(() => {
-    if (appInfo.name && !render.current) {
-      render.current = true;
+    if (appInfo.name && !renderRef.current) {
+      renderRef.current = true;
       currentApp.current = JSON.parse(JSON.stringify(appInfo));
       window.agent = null;
-      setElsaData();
+      setElsaData(elsaReadOnlyRef.current);
     }
   }, [appInfo]);
   useEffect(() => {
     return () => {
-      render.current = false;
+      renderRef.current = false;
       window.agent = null;
       dispatch(setTestStatus(null));
     }
@@ -112,14 +113,38 @@ const Stage = (props) => {
     return null;
   }
   const realAppId = getQueryString('appId');
+  const updateConfigs = () => {
+    const startNodeIndex = CONFIGS.findIndex(item => item.node === 'startNodeStart');
+    if (startNodeIndex === -1) {
+      return;
+    }
+    const startNode = CONFIGS[startNodeIndex];
+    if (!startNode.appConfig?.appChatStyle?.options) {
+      return;
+    }
+    // 生成 pluginOptions 并去重
+    const existingValues = new Set(
+      startNode.appConfig.appChatStyle.options.map(opt => opt.value)
+    );
+    const pluginOptions = pluginList
+      .filter(plugin => !existingValues.has(plugin.name))
+      .map(plugin => ({
+        value: plugin.name,
+        label: plugin.chineseName ?? plugin.name,
+        image: plugin.icon,
+      }));
+
+    startNode.appConfig.appChatStyle.options.push(...pluginOptions);
+  };
   // 编辑工作流
-  function setElsaData() {
+  function setElsaData(readOnly: boolean) {
     let graphData = appInfo.flowGraph?.appearance || {};
     const stageDom = document.getElementById('stage');
     let data = JSON.parse(JSON.stringify(graphData));
     let configIndex = CONFIGS.findIndex(item => item.node === 'llmNodeState');
     CONFIGS[configIndex].params.tenantId = tenantId;
     CONFIGS[configIndex].params.appId = appId;
+    updateConfigs();
     setSpinning && setSpinning(true);
     const flow = types === 'evaluate'
       ? JadeFlow.evaluate(stageDom, tenantId, realAppId, data, false, CONFIGS, i18n)
@@ -211,7 +236,6 @@ const Stage = (props) => {
       agent.listen('SELECT_KNOWLEDGE_BASE_GROUP', (event) => {
         connectKnowledgeEvent.current = event;
         connectKnowledgeRef.current.openModal();
-        event.onSelect(groupId, knowledgeConfigId);
         setGroupId(event.selectedGroupId);
         setKnowledgeConfigId(event.selectedKnowledgeConfigId);
       });
@@ -221,6 +245,15 @@ const Stage = (props) => {
         setShowTools(true);
         setModalTypes('loop');
       });
+      // 并行节点
+      agent.onParallelSelect(({ onSelect }) => {
+        pluginCallback.current = onSelect;
+        setShowTools(true);
+        setModalTypes('parallel');
+      });
+      if (readOnly) {
+        agent.readOnly();
+      }
     }).catch(() => {
       setSpinning && setSpinning(false);
     });
@@ -270,13 +303,17 @@ const Stage = (props) => {
     let obj = {};
     let uniqueName = '';
     let loopObj = {};
+    let parallelObj = {};
     item.forEach((e) => {
       obj = e.schema;
       uniqueName = e.uniqueName;
       loopObj = e;
+      parallelObj = e;
     });
     if (modalTypes === 'loop') {
       pluginCallback.current(loopObj);
+    } else if (modalTypes === 'parallel') {
+      pluginCallback.current(parallelObj);
     } else if (modalTypes === 'llmTool') {
       pluginCallback.current(uniqueName);
     } else {
@@ -293,6 +330,9 @@ const Stage = (props) => {
   // 数据实时保存
   const handleChange = useCallback(debounce((id) => elsaChange(id), 2000), []);
   function elsaChange(id: any) {
+    if (elsaReadOnlyRef.current) {
+      return;
+    }
     let graphChangeData = window.agent.serialize();
     currentApp.current.flowGraph.appearance = graphChangeData;
     updateAppRunningFlow(id);

@@ -35,10 +35,14 @@
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>jade-common-service</artifactId>
         </dependency>
-
         <dependency>
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>authentication-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>modelengine.fit.jade.service</groupId>
+            <artifactId>apikey-service</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
         <!-- Common -->
@@ -97,32 +101,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.fitframework</groupId>
-                <artifactId>fit-dependency-maven-plugin</artifactId>
-                <version>${fit.version}</version>
-                <executions>
-                    <execution>
-                        <id>dependency</id>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>dependency</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven.jar.version}</version>
-                <configuration>
-                    <archive>
-                        <manifestEntries>
-                            <Created-By>FIT Lab</Created-By>
-                        </manifestEntries>
-                    </archive>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.service;
 
+import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jober.aipp.condition.AppQueryCondition;
 import modelengine.fit.jober.aipp.dto.AippCreateDto;
@@ -19,12 +20,9 @@ import modelengine.fit.jober.aipp.dto.AppBuilderSaveConfigDto;
 import modelengine.fit.jober.aipp.dto.PublishedAppResDto;
 import modelengine.fit.jober.aipp.dto.check.AppCheckDto;
 import modelengine.fit.jober.aipp.dto.check.CheckResult;
-import modelengine.fit.jober.aipp.dto.export.AppExportDto;
 import modelengine.fit.jober.aipp.dto.template.TemplateAppCreateDto;
 import modelengine.fit.jober.aipp.dto.template.TemplateInfoDto;
 import modelengine.fit.jober.common.RangedResultSet;
-import modelengine.fit.http.server.HttpClassicServerRequest;
-import modelengine.fit.jane.common.entity.OperationContext;
 import modelengine.fitframework.annotation.Genericable;
 
 import java.util.List;
@@ -157,10 +155,10 @@ public interface AppBuilderAppService {
      * @param limit 表示获取数据的最大个数的 {@code int}。
      * @param appId 表示应用唯一标识的 {@link String}。
      * @param context 表示操作上下文的 {@link OperationContext}。
-     * @return 获取到的历史版本信息集合的 {@link List}{@code <}{@link PublishedAppResDto}{@code >}。
+     * @return 获取到的历史版本信息集合的 {@link RangedResultSet}{@code <}{@link PublishedAppResDto}{@code >}。
      */
     @Genericable(id = "modelengine.fit.jober.aipp.service.app.recent.published")
-    List<PublishedAppResDto> recentPublished(AppQueryCondition cond, long offset, int limit, String appId,
+    RangedResultSet<AppBuilderAppDto> recentPublished(AppQueryCondition cond, long offset, int limit, String appId,
             OperationContext context);
 
     /**
@@ -174,16 +172,6 @@ public interface AppBuilderAppService {
     PublishedAppResDto published(String uniqueName, OperationContext context);
 
     /**
-     * 导出应用配置。
-     *
-     * @param appId 表示应用的唯一表示的 {@link String}。
-     * @param context 表示操作上下文的 {@link OperationContext}。
-     * @return 导出的应用配置信息的 {@link AppExportDto}。
-     */
-    @Genericable(id = "modelengine.fit.jober.aipp.service.app.export")
-    AppExportDto export(String appId, OperationContext context);
-
-    /**
      * 根据应用配置进行可用性校验。
      *
      * @param appCheckDtos 表示待检查配置项的{@link List}{@code <}{@link AppCheckDto}{@code >}。
@@ -192,16 +180,6 @@ public interface AppBuilderAppService {
      */
     @Genericable(id = "modelengine.fit.jober.aipp.service.app.check")
     List<CheckResult> checkAvailable(List<AppCheckDto> appCheckDtos, OperationContext context);
-
-    /**
-     * 导入应用。
-     *
-     * @param appConfig 表示上传的应用配置文件的 {@link String}。
-     * @param context 表示操作上下文的 {@link OperationContext}。
-     * @return 表示创建的应用的 {@link AppBuilderAppDto}。
-     */
-    @Genericable(id = "modelengine.fit.jober.aipp.service.app.import")
-    AppBuilderAppDto importApp(String appConfig, OperationContext context);
 
     /**
      * 将应用发布为应用模板。
@@ -231,4 +209,15 @@ public interface AppBuilderAppService {
      */
     @Genericable(id = "modelengine.fit.jober.aipp.service.app.deleteTemplate")
     void deleteTemplate(String templateId, OperationContext context);
+
+    /**
+     * 恢复应用到指定历史版本。
+     *
+     * @param appId 表示应用唯一标识的 {@link String}。
+     * @param resetId 表示指定历史版本唯一标识的 {@link String}。
+     * @param context 表示接口操作上下文的 {@link OperationContext}。
+     * @return 表示恢复应用完成后应用详情的 {@link AppBuilderAppDto}。
+     */
+    @Genericable(id = "modelengine.fit.jober.aipp.service.app.recover")
+    AppBuilderAppDto recoverApp(String appId, String resetId, OperationContext context);
 }

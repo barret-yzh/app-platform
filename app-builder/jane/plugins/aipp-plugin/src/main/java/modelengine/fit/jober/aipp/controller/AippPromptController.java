@@ -6,27 +6,27 @@
 
 package modelengine.fit.jober.aipp.controller;
 
+import modelengine.fit.jane.common.controller.AbstractController;
+import modelengine.fit.jane.common.response.Rsp;
 import modelengine.fit.jane.task.gateway.Authenticator;
+import modelengine.fit.jober.aipp.dto.model.PromptGenerateDto;
+import modelengine.fit.jober.aipp.service.AippModelService;
 import modelengine.jade.service.annotations.CarverSpan;
 
 import modelengine.fit.http.annotation.PostMapping;
 import modelengine.fit.http.annotation.RequestBody;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.server.HttpClassicServerRequest;
-import modelengine.fit.jane.common.controller.AbstractController;
-import modelengine.fit.jane.common.response.Rsp;
-import modelengine.fit.jober.aipp.dto.model.PromptGenerateDto;
-import modelengine.fit.jober.aipp.service.AippModelService;
 import modelengine.fitframework.annotation.Component;
 
 /**
- * 大模型服务接口.
+ * 提示词服务接口.
  *
  * @author 张越
  * @since 2024/11/29
  */
 @Component
-@RequestMapping(path = "/v1/api/model", group = "aipp对话管理接口")
+@RequestMapping(path = "/v1/api/model", group = "aipp提示词管理接口")
 public class AippPromptController extends AbstractController {
     private final AippModelService aippModelService;
 

@@ -24,11 +24,11 @@ import modelengine.fitframework.annotation.Property;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ChatDeleteParams {
-    @RequestQuery(value = "app_id", required = false)
+    @RequestQuery(value = "appId", required = false)
     @Property(description = "应用的唯一标识符")
     private String appId;
 
-    @RequestQuery(value = "chat_id", required = false)
+    @RequestQuery(value = "chatId", required = false)
     @Property(description = "要删除的聊天会话的唯一标识符，若没有指定，则全部删除")
     private String chatId;
 }

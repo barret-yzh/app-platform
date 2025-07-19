@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
-import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.fit.http.client.HttpClassicClientResponse;
 import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fitframework.annotation.Fit;
@@ -35,6 +34,7 @@ import modelengine.jade.knowledge.dto.KnowledgeDto;
 import modelengine.jade.knowledge.enums.IndexType;
 import modelengine.jade.knowledge.router.KnowledgeServiceRouter;
 import modelengine.jade.knowledge.support.FlatFilterConfig;
+import modelengine.jade.store.service.ToolGroupService;
 
 import org.assertj.core.api.Assertions;
 import org.assertj.core.groups.Tuple;

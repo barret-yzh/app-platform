@@ -4,15 +4,15 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import React, { useState, useImperativeHandle, useRef } from 'react';
-import { useParams, useHistory } from 'react-router-dom';
-import { Input, Modal, Button, Form } from 'antd';
+import React, { useImperativeHandle, useRef, useState } from 'react';
+import { useHistory, useParams } from 'react-router-dom';
+import { Button, Form, Input, Modal } from 'antd';
 import { Message } from '@/shared/utils/message';
-import { appPublish, updateFlowInfo, getVersion } from '@/shared/http/aipp';
+import { appPublish, getVersion, updateFlowInfo } from '@/shared/http/aipp';
 import { versionStringCompare } from '@/shared/utils/common';
 import { useAppDispatch } from '@/store/hook';
 import { setChatId, setChatList } from '@/store/chatStore/chatStore';
-import { setTestStatus } from "@/store/flowTest/flowTest";
+import { setTestStatus } from '@/store/flowTest/flowTest';
 import { useTranslation } from 'react-i18next';
 import { createEvaluate } from '../../shared/http/appEvaluate';
 import TextEditor from './text-editor';
@@ -48,7 +48,7 @@ const PublishModal = (props) => {
       app_type: publishType !== 'app' ? 'waterflow' : appInfo.attributes?.app_type
     });
     setIsModalOpen(true);
-    getVersion(tenantId, appId).then(res => {
+    getVersion(tenantId, appId, publishType, 0, 1).then(res => {
       if (res.code === 0) {
         form.setFieldsValue({
           description: res.data[0]?.publishedDescription || ''
@@ -143,6 +143,9 @@ const PublishModal = (props) => {
   async function updateAppRunningFlow() {
     setLoading(true);
     let params = appInfo.flowGraph;
+    if (window.agent) {
+      params.appearance = window.agent.serialize();
+    }
     const res = await updateFlowInfo(tenantId, appId, params);
     if (res.code === 0) {
       publishWaterFlow();

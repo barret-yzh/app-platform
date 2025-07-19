@@ -6,17 +6,17 @@
 
 package modelengine.fit.waterflow.flowsengine.domain.flows.definitions.nodes;
 
-import static modelengine.fit.jade.waterflow.ErrorCodes.CONDITION_NODE_EXEC_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.CONTEXT_TYPE_NOT_SUPPORT;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_ENGINE_CONDITION_RULE_PARSE_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_ENGINE_EXECUTOR_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_ENGINE_OHSCRIPT_GRAMMAR_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_EXECUTE_ASYNC_JOBER_FAILED;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_GENERAL_JOBER_INVOKE_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_NODE_OPERATOR_NOT_SUPPORT;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_STORE_JOBER_INVOKE_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.FLOW_SYSTEM_ERROR;
-import static modelengine.fit.jade.waterflow.ErrorCodes.TYPE_CONVERT_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.CONDITION_NODE_EXEC_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.CONTEXT_TYPE_NOT_SUPPORT;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_ENGINE_CONDITION_RULE_PARSE_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_ENGINE_EXECUTOR_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_ENGINE_OHSCRIPT_GRAMMAR_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_EXECUTE_ASYNC_JOBER_FAILED;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_GENERAL_JOBER_INVOKE_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_NODE_OPERATOR_NOT_SUPPORT;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_STORE_JOBER_INVOKE_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.FLOW_SYSTEM_ERROR;
+import static modelengine.fit.waterflow.ErrorCodes.TYPE_CONVERT_FAILED;
 import static modelengine.fit.waterflow.spi.FlowExceptionService.HANDLE_EXCEPTION_GENERICABLE;
 import static modelengine.fitframework.util.ObjectUtils.cast;
 
@@ -24,7 +24,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import modelengine.fit.jade.waterflow.exceptions.WaterflowException;
+import modelengine.fit.waterflow.exceptions.WaterflowException;
 import modelengine.fit.ohscript.util.UUIDUtil;
 import modelengine.fit.waterflow.common.Constant;
 import modelengine.fit.waterflow.entity.FlowErrorInfo;
@@ -60,6 +60,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -362,16 +363,12 @@ public abstract class FlowNode {
     }
 
     private void setJoberErrorInfo(FlowErrorInfo errorInfo, WaterflowException jobberException) {
-        if (!(jobberException.getCause() instanceof FitException)) {
+        if (!(jobberException.getCause() instanceof FitException originalException)) {
             setErrorInfo(errorInfo, FLOW_SYSTEM_ERROR.getErrorCode(), jobberException.getCause().getMessage(),
                     new String[0]);
             return;
         }
-        FitException originalException = (FitException) jobberException.getCause();
-        String message = originalException.getMessage();
-        if (StringUtils.isBlank(message)) {
-            message = originalException.getCause().getMessage();
-        }
+        String message = this.getActualMessage(originalException);
         setErrorInfo(errorInfo, originalException.getCode(), message, new String[0]);
         errorInfo.setProperties(new HashMap<>());
         errorInfo.getProperties().put("fitableId", originalException.getProperties().get("fitableId"));
@@ -538,5 +535,18 @@ public abstract class FlowNode {
             this.messenger = messenger;
             this.locks = locks;
         }
+    }
+
+    private String getActualMessage(Throwable throwable) {
+        Set<Throwable> visited = new HashSet<>();
+        while (throwable != null && !visited.contains(throwable)) {
+            visited.add(throwable);
+            String message = throwable.getMessage();
+            if (StringUtils.isNotBlank(message)) {
+                return message;
+            }
+            throwable = throwable.getCause();
+        }
+        return null;
     }
 }

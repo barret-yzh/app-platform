@@ -1,0 +1,111 @@
+{
+  "chunks": [
+    {
+      "chunk_id": "chunk1",
+      "knowledgebase_id": "know1",
+      "document_id": "doc1",
+      "document_name": "doc1.txt",
+      "meta": {
+        "coord": "{\"box\": [[20, 435, 275, 25], [20, 465, 275, 10], [20, 480, 330, 25], [20, 510, 205, 10], [20, 525, 5, 10], [20, 540, 35, 10], [20, 555, 45, 10], [20, 570, 35, 10], [20, 585, 25, 10], [20, 600, 5, 10], [20, 615, 45, 10], [20, 630, 5, 10], [20, 645, 45, 10], [20, 660, 105, 10], [20, 675, 45, 10], [20, 690, 5, 10], [20, 705, 45, 10], [20, 720, 75, 10], [20, 735, 45, 10], [20, 750, 45, 10], [20, 765, 65, 10], [20, 30, 45, 10], [20, 45, 65, 10]], \"page_num\": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], \"parent_list\": [], \"parent_last\": 0}",
+        "page_nums": [],
+        "tokens": 257,
+        "word_count": 335,
+        "title": "msg",
+        "para_format": "txt",
+        "para_type": "text",
+        "chart_img_key_id": "",
+        "left_neighbors": [
+          "b3884dd6-f23b-4590-a48e-0e7afab94d84"
+        ],
+        "right_neighbors": [],
+        "position": 6,
+        "segment_id": "d235f87d-2dcf-4dd5-9283-4d38ce077a6b"
+      },
+      "chunk_type": "paragraph",
+      "content": "content1",
+      "create_time": "2025-04-22T14:59:50.711000",
+      "update_time": "2025-04-22T14:59:50.711000",
+      "retrieval_score": 0,
+      "rank_score": 0.46465864777565,
+      "locations": {
+        "page_num": [],
+        "box": []
+      },
+      "children": [],
+      "position": 6
+    },
+    {
+      "chunk_id": "chunk2",
+      "knowledgebase_id": "know2",
+      "document_id": "doc2",
+      "document_name": "doc2.txt",
+      "meta": {
+        "coord": "{\"box\": [[20, 405, 375, 10], [20, 420, 105, 10], [20, 435, 65, 10], [20, 450, 75, 10], [20, 465, 95, 10], [20, 480, 45, 10], [20, 495, 45, 10], [20, 510, 45, 10], [20, 525, 45, 10], [20, 540, 45, 10], [20, 555, 45, 10], [20, 570, 45, 10], [20, 585, 55, 10], [20, 600, 60, 10], [20, 615, 55, 10], [20, 630, 55, 10], [20, 645, 75, 10], [20, 660, 45, 10], [20, 675, 40, 10], [20, 690, 60, 10], [20, 705, 45, 10], [20, 720, 25, 10], [20, 735, 45, 10], [20, 750, 35, 10], [20, 765, 25, 10], [20, 30, 25, 10], [20, 45, 55, 10], [20, 60, 60, 10], [20, 75, 20, 10], [20, 90, 55, 10], [20, 105, 45, 10], [20, 120, 30, 10], [20, 135, 75, 10], [20, 150, 30, 10], [20, 165, 40, 10], [20, 180, 30, 10], [20, 195, 35, 10], [20, 210, 65, 10], [20, 225, 5, 10], [20, 240, 35, 10], [20, 255, 35, 10], [20, 270, 45, 10], [20, 285, 55, 10], [20, 300, 75, 10], [20, 315, 35, 10], [20, 330, 105, 10], [20, 345, 55, 10], [20, 360, 535, 25]], \"page_num\": [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3], \"parent_list\": [], \"parent_last\": 0}",
+        "page_nums": [],
+        "tokens": 262,
+        "word_count": 341,
+        "title": "msg",
+        "para_format": "txt",
+        "para_type": "text",
+        "chart_img_key_id": "",
+        "left_neighbors": [
+          "f489ab6d-f65f-4f91-8219-0cebe0286133"
+        ],
+        "right_neighbors": [
+          "55933d95-7340-48fd-8a97-7de5a5053fba"
+        ],
+        "position": 2,
+        "segment_id": "c5479400-ec6e-4b9e-b7b2-ef085895ee98"
+      },
+      "chunk_type": "paragraph",
+      "content": "content2",
+      "create_time": "2025-04-22T14:59:50.710000",
+      "update_time": "2025-04-22T14:59:50.710000",
+      "retrieval_score": 0,
+      "rank_score": 0.4540485143661499,
+      "locations": {
+        "page_num": [],
+        "box": []
+      },
+      "children": [],
+      "position": 2
+    },
+    {
+      "chunk_id": "chunk3",
+      "knowledgebase_id": "know3",
+      "document_id": "doc3",
+      "document_name": "doc3.txt",
+      "meta": {
+        "coord": "{\"box\": [[20, 30, 540, 40], [20, 75, 5, 10], [20, 90, 520, 40]], \"page_num\": [0, 0, 0], \"parent_list\": [], \"parent_last\": 0}",
+        "page_nums": [
+          0,
+          0,
+          0
+        ],
+        "tokens": 213,
+        "word_count": 277,
+        "title": "msg",
+        "para_format": "txt",
+        "para_type": "text",
+        "chart_img_key_id": "",
+        "left_neighbors": [],
+        "right_neighbors": [],
+        "position": 1,
+        "segment_id": "1983b910-3f09-4ead-aaad-a3ca0503cf78"
+      },
+      "chunk_type": "paragraph",
+      "content": "content3",
+      "create_time": "2025-04-22T14:31:10.173000",
+      "update_time": "2025-04-22T14:31:10.173000",
+      "retrieval_score": 0,
+      "rank_score": 0.44625335931777954,
+      "locations": {
+        "page_num": [],
+        "box": []
+      },
+      "children": [],
+      "position": 1
+    }
+  ],
+  "total_count": 3
+}

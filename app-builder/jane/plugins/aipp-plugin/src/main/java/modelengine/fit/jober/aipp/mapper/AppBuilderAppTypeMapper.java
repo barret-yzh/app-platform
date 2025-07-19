@@ -6,6 +6,7 @@
 
 package modelengine.fit.jober.aipp.mapper;
 
+import modelengine.fit.jober.aipp.aop.Locale;
 import modelengine.fit.jober.aipp.po.AppBuilderAppTypePo;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public interface AppBuilderAppTypeMapper {
      * @param tenantId 表示租户唯一标识的 {@link String}。
      * @return 表示分类列表的 {@link List}{@code <}{@link AppBuilderAppTypePo}{@code >}。
      */
+    @Locale
     List<AppBuilderAppTypePo> queryAll(String tenantId);
 
     /**
@@ -54,5 +56,6 @@ public interface AppBuilderAppTypeMapper {
      * @param tenantId 表示租户唯一标识的 {@link String}。
      * @return 表示应用分类信息的 {@link AppBuilderAppTypePo}。
      */
+    @Locale
     AppBuilderAppTypePo query(String id, String tenantId);
 }

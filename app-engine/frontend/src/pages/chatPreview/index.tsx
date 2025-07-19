@@ -6,7 +6,6 @@
 
 import React, { useEffect, useState, useContext, useRef } from 'react';
 import { useLocation } from 'react-router';
-import { useParams } from 'react-router-dom';
 import { Spin } from 'antd';
 import { LeftArrowIcon } from '@/assets/icon';
 import { Message } from '@/shared/utils/message';
@@ -46,7 +45,7 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { storage } from '@/shared/storage';
 import { EventSourceParserStream } from '@/shared/eventsource-parser/stream';
-import { setAppId, setAippId, setAppInfo } from '@/store/appInfo/appInfo';
+import { setAppId, setAippId } from '@/store/appInfo/appInfo';
 import { useTranslation } from 'react-i18next';
 import { pick, cloneDeep } from 'lodash';
 import ChatMessage from './components/chat-message';
@@ -112,14 +111,14 @@ const ChatPreview = (props) => {
   const detailPage = location.pathname.indexOf('app-detail') !== -1;
   const storageId = detailPage ? aippId : appId;
   const chatStatus = ['ARCHIVED', 'ERROR', 'TERMINATED'];
-  const messageType = ['MSG', 'ERROR', 'META_MSG'];
+  const messageType = ['MSG', 'ERROR', 'META_MSG', 'HIDDEN_MSG'];
+  const readOnly = useAppSelector((state) => state.commonStore.isReadOnly);
 
   useEffect(() => {
     currentInfo.current = appInfo;
     window.addEventListener("previewPicture", handlePreview);
     return () => {
       closeConnected();
-      dispatch(setAppInfo({}));
       dispatch(setAppId(null));
       dispatch(setChatId(undefined));
       dispatch(setAippId(''));
@@ -161,6 +160,7 @@ const ChatPreview = (props) => {
     try {
       const res:any = await getChatRecentLog(tenantId, chatId, appId);
       if (res.data && res.data.length) {
+        showTerminate(res);
         let chatArr = historyChatProcess(res);
         listRef.current = deepClone(chatArr);
         await dispatch(setChatList(chatArr));
@@ -171,6 +171,17 @@ const ChatPreview = (props) => {
       setLoading(false);
     }
   }
+
+  const showTerminate = (res) => {
+    const lastItem = res.data[res.data.length - 1];
+    if (lastItem && lastItem.status === 'RUNNING') {
+      setShowStop(true);
+      dispatch(setChatRunning(true));
+      runningInstanceId.current = lastItem.instanceId;
+    }
+    return;
+  };
+
   useEffect(() => {
     if (appInfo.id) {
       dispatch(setChatRunning(false));
@@ -383,6 +394,7 @@ const ChatPreview = (props) => {
     try {
       // 初始化设置instanceId
       if (messageData.status === 'READY') {
+        saveLocalChatId(messageData);
         runningInstanceId.current = messageData.instance_id;
         setShowStop(true);
         return;
@@ -404,7 +416,7 @@ const ChatPreview = (props) => {
         let msg = messageData.extensions.stageDesc || '';
         receiveItem.content = msg;
         receiveItem.logId = messageData.log_id;
-        chatStrInit(msg, receiveItem, messageData.status, messageData.log_id, { isStepLog: true });
+        chatStrInit(msg, receiveItem, messageData.status, messageData.log_id, { isStepLog: true }, false);
         return
       }
       // 普通日志
@@ -428,7 +440,7 @@ const ChatPreview = (props) => {
           if (log.msgId) {
             chatSplicing(log, msg, recieveChatItem, messageData.status);
           } else {
-            chatStrInit(msg, recieveChatItem, messageData.status, messageData.log_id, messageData.extensions);
+            chatStrInit(msg, recieveChatItem, messageData.status, messageData.log_id, messageData.extensions, false);
           }
         }
       });
@@ -469,7 +481,7 @@ const ChatPreview = (props) => {
     scrollToBottom();
   };
   // 流式输出
-  function chatStrInit(msg, initObj, status, logId, extensions:any = {}) {
+  function chatStrInit(msg, initObj, status, logId, extensions:any = {}, addChat) {
     let idx = 0;
     if (isJsonString(msg)) {
       let msgObj = JSON.parse(msg);
@@ -482,13 +494,16 @@ const ChatPreview = (props) => {
     }
     initObj.loading = false;
     idx = listRef.current.length - 1;
+    if (addChat) {
+      idx = listRef.current.length;
+    }
     if (status === 'ARCHIVED') {
       initObj.finished = true;
       if (extensions.isEnableLog && !listRef.current[idx].loading) {
         idx = listRef.current.length;
       } else {
         if (!extensions.isEnableLog && !listRef.current[idx].step) {
-          initObj.content ? null :  initObj.content = listRef.current[idx].content;
+          initObj.content = listRef.current[idx].content;
         }
       }
     }
@@ -531,7 +546,11 @@ const ChatPreview = (props) => {
       }
       dispatch(setChatList(deepClone(listRef.current)));
     } else {
-      chatStrInit(msg, initObj, status, '');
+      let addChat = false;
+      if (!listRef.current[listRef.current.length - 1].loading) {
+        addChat = true;
+      }
+      chatStrInit(msg, initObj, status, '', {}, addChat);
     }
   }
   // 多模型回答时消息处理
@@ -698,7 +717,7 @@ const ChatPreview = (props) => {
               checkedChat={checkedList}
               deleteChat={deleteChat} />
             <SendEditor
-              display={!showCheck}
+              display={!showCheck && !readOnly}
               onSend={onSend}
               onStop={chatRunningStop}
               filterRef={editorRef}
@@ -714,7 +733,7 @@ const ChatPreview = (props) => {
             />
             {previewVisible && <PreviewPicture {...previewProps} closePreview={() => setPreviewVisible(false)} />}
           </div>
-          {showInspiration && <div className={`chat-inner-right ${inspirationOpen ? 'chat-right-close' : ''}`}>
+          {showInspiration && <div className={`chat-inner-right ${inspirationOpen && !readOnly ? 'chat-right-close' : ''}`}>
             {appInfo.id &&
               <Inspiration
                 reload={inspirationRef}

@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
  * @since 2024-12-17
  */
 @Component
-@RequestMapping(path = "/v1/tenants/{tenantId}/apps", group = "应用信息管理接口")
+@RequestMapping(path = "/api/app/v1/tenants/{tenantId}/apps", group = "应用信息管理接口")
 public class AppBuilderAppController extends AbstractController {
     private final List<String> excludeNames;
     private final AppBuilderAppServiceAdapter appService;

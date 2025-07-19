@@ -14,9 +14,41 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>apikey-auth-default</module>
         <module>authentication-default</module>
         <module>http-interceptor</module>
         <module>schema-generator</module>
         <module>schema-validator-everit-h1</module>
     </modules>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.fitframework</groupId>
+                <artifactId>fit-dependency-maven-plugin</artifactId>
+                <version>${fit.version}</version>
+                <executions>
+                    <execution>
+                        <id>dependency</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>dependency</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven.jar.version}</version>
+                <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Created-By>FIT Lab</Created-By>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

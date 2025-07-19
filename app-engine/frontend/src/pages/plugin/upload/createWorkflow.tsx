@@ -98,7 +98,7 @@ const CreateWorkfowDrawer = (props) => {
               const res = await createAipp(tenantId, 'df87073b9bc85a48a9b01eccc9afccc3', { type: 'waterFlow', name: form.getFieldValue('name'), icon: icon, description: form.getFieldValue('description'), app_built_type: 'workflow', app_category: 'workflow' });
               const aippId = res.data.id;
               sessionStorage.setItem('add-type', 'plugin');
-              navigate(`/app-develop/${tenantId}/add-flow/${aippId}`);
+              navigate(`/app-develop/${tenantId}/add-flow/${aippId}?type=workFlow`);
               setOpen(false);
             }}
           >

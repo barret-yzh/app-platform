@@ -28,8 +28,6 @@ import static org.mockito.Mockito.when;
 import modelengine.fel.tool.info.entity.ToolJsonEntity;
 import modelengine.fel.tool.model.transfer.DefinitionGroupData;
 import modelengine.fel.tool.model.transfer.ToolGroupData;
-import modelengine.fel.tool.service.DefinitionGroupService;
-import modelengine.fel.tool.service.ToolGroupService;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.serialization.ObjectSerializer;
 import modelengine.fitframework.util.StringUtils;
@@ -37,7 +35,9 @@ import modelengine.jade.carver.ListResult;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.entity.query.PluginQuery;
 import modelengine.jade.store.entity.transfer.PluginData;
+import modelengine.jade.store.service.DefinitionGroupService;
 import modelengine.jade.store.service.PluginService;
+import modelengine.jade.store.service.ToolGroupService;
 import modelengine.jade.store.tool.upload.config.PluginUploadConstraintConfig;
 import modelengine.jade.store.tool.upload.support.processor.DefinitionProcessor;
 import modelengine.jade.store.tool.upload.support.processor.ToolProcessor;
@@ -72,7 +72,7 @@ public class BasicValidatorTest {
     private static final String NEW_TOOL_JSON = "src/test/resources/tools.json";
     private static final String MOCK_TOOLS_PATH = "/mock/store/tools/";
 
-    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
     private PluginService pluginService;
     private PluginUploadConstraintConfig config;
 
@@ -194,7 +194,7 @@ public class BasicValidatorTest {
     @Nested
     @DisplayName("测试重复的组信息")
     class ValidateGroupInfo {
-        private JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null);
+        private JacksonObjectSerializer serializer = new JacksonObjectSerializer(null, null, null, true);
         private ToolJsonEntity tool;
         private List<ToolGroupData> toolGroups;
         private List<DefinitionGroupData> defGroups;

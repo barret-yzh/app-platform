@@ -25,15 +25,15 @@ class AppQueryParamsTest {
     @DisplayName("用构建器构建查询应用状态类时，返回成功")
     void constructAppQueryParams() {
         AppQueryParams condition = AppQueryParams.builder()
-                .appIds(Arrays.asList("id1", "id2"))
+                .ids(Arrays.asList("id1", "id2"))
                 .name("AppName")
                 .state("ACTIVE")
                 .excludeNames(Arrays.asList("Exclude1", "Exclude2"))
                 .build();
 
         assertThat(condition).isNotNull();
-        assertThat(condition.getAppIds()).hasSize(2);
-        assertThat(condition.getAppIds().get(0)).isEqualTo("id1");
+        assertThat(condition.getIds()).hasSize(2);
+        assertThat(condition.getIds().get(0)).isEqualTo("id1");
         assertThat(condition.getName()).isEqualTo("AppName");
         assertThat(condition.getState()).isEqualTo("ACTIVE");
         assertThat(condition.getExcludeNames()).hasSize(2);

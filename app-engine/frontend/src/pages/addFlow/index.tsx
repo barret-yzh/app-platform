@@ -36,8 +36,16 @@ import './styles/index.scss';
 const AddFlow = (props) => {
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
-  const { type, appInfo, addFlowRef,
-    showFlowChangeWarning, setShowFlowChangeWarning, saveTime, setSaveTime } = props;
+  const {
+    type,
+    appInfo,
+    addFlowRef,
+    showFlowChangeWarning,
+    setShowFlowChangeWarning,
+    saveTime,
+    setSaveTime,
+    updateAippCallBack,
+  } = props;
   const [dragData, setDragData] = useState([]);
   const [evaluateData, setEvaluateData] = useState([]);
   const [flowInfo, setFlowInfo] = useState({});
@@ -49,6 +57,7 @@ const AddFlow = (props) => {
   const { tenantId, appId } = useParams();
   const [evaluateType, setEvaluateType] = useState('waterFlow');
   const readOnly = useAppSelector((state) => state.chatCommonStore.readOnly);
+  const preview = useAppSelector((state) => state.commonStore.isReadOnly);
   const appRef = useRef<any>(null);
   const flowIdRef = useRef<any>(null);
   const elsaRunningCtl = useRef<any>(null);
@@ -134,7 +143,7 @@ const AddFlow = (props) => {
     <div className='add-flow-container'>
       <FlowContext.Provider value={flowContext}>
         {/* 工具流header */}
-        {!type &&
+        {(!type || workFlow) &&
           <FlowHeader
             debugTypes={debugTypes}
             handleDebugClick={handleDebugClick}
@@ -143,6 +152,7 @@ const AddFlow = (props) => {
             setShowDebug={setShowDebug}
             workFlow={workFlow}
             types={evaluateType}
+            updateAippCallBack={updateAippCallBack}
           />}
         {/* 调试抽屉弹窗 */}
         <FlowTest
@@ -156,22 +166,24 @@ const AddFlow = (props) => {
         {/* 左侧菜单 */}
         <div className={['content', !type ? 'content-add' : null].join(' ')}>
           {
-            showMenu ? (
-              <LeftMenu
-                menuClick={menuClick}
-                dragData={dragData}
-                setDragData={setDragData}
-                evaluateData={evaluateData}
-                setEvaluateData={setEvaluateData}
-                type={evaluateType}
-              />
-            ) : (
-                <Tooltip placement='rightTop' title={t('expandArrange')}>
-                  <div className='menu-icon' onClick={menuClick}>
-                    <ConfigFlowIcon />
-                  </div>
-                </Tooltip>
+            !preview && (
+              showMenu ? (
+                <LeftMenu
+                  menuClick={menuClick}
+                  dragData={dragData}
+                  setDragData={setDragData}
+                  evaluateData={evaluateData}
+                  setEvaluateData={setEvaluateData}
+                  type={evaluateType}
+                />
+              ) : (
+                  <Tooltip placement='rightTop' title={t('expandArrange')}>
+                    <div className='menu-icon' onClick={menuClick}>
+                      <ConfigFlowIcon />
+                    </div>
+                  </Tooltip>
               )
+            )
           }
           {/* elsa编排组件 */}
           <Stage

@@ -32,20 +32,25 @@ import java.util.stream.Collectors;
 public class AppBuilderAppServiceAdapterImpl implements AppBuilderAppServiceAdapter {
     private final AppBuilderAppService appBuilderAppService;
 
+    /**
+     * 用应用创建服务接口{@link AppBuilderAppService} 构造 {@link AppBuilderAppServiceAdapterImpl}。
+     *
+     * @param appBuilderAppService 表示应用创建服务接口的 {@link AppBuilderAppService}。
+     */
     public AppBuilderAppServiceAdapterImpl(AppBuilderAppService appBuilderAppService) {
         this.appBuilderAppService = notNull(appBuilderAppService, "The app builder app service cannot be null.");
     }
 
     @Override
     public RangedResultSet<AppMetadata> list(AppQueryParams params, OperationContext context) {
-        AppQueryCondition appQueryCondition = BeanUtils.copyProperties(params, AppQueryCondition.class);
+        AppQueryCondition appQueryCondition = this.convertParams(params);
         if (params.getType() == null) {
             params.setType("app");
         }
         appQueryCondition.setTenantId(context.getTenantId());
         appQueryCondition.setType(params.getType());
-        Rsp<RangedResultSet<AppBuilderAppMetadataDto>> rsp = this.appBuilderAppService.list(appQueryCondition,
-                context, params.getOffset(), params.getLimit());
+        Rsp<RangedResultSet<AppBuilderAppMetadataDto>> rsp =
+                this.appBuilderAppService.list(appQueryCondition, context, params.getOffset(), params.getLimit());
         return this.appMetadataDtoConvertToAdapter(rsp.getData());
     }
 
@@ -54,5 +59,20 @@ public class AppBuilderAppServiceAdapterImpl implements AppBuilderAppServiceAdap
                 .stream()
                 .map(appBuilderAppMetadataDto -> BeanUtils.copyProperties(appBuilderAppMetadataDto, AppMetadata.class))
                 .collect(Collectors.toList()), dto.getRange());
+    }
+
+    private AppQueryCondition convertParams(AppQueryParams params) {
+        if (params == null) {
+            return null;
+        }
+        return AppQueryCondition.builder()
+                .ids(params.getIds())
+                .name(params.getName())
+                .state(params.getState())
+                .excludeNames(params.getExcludeNames())
+                .offset(Long.valueOf(params.getOffset()))
+                .limit(params.getLimit())
+                .type(params.getType())
+                .build();
     }
 }

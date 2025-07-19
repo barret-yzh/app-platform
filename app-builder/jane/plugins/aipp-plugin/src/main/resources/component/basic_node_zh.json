@@ -16,7 +16,7 @@
   },
   {
     "type": "intelligentFormNodeState",
-    "name": "智能编排表单",
+    "name": "表单",
     "uniqueName": ""
   },
   {
@@ -70,8 +70,8 @@
     "uniqueName": ""
   },
   {
-    "type": "manualCheckNodeState",
-    "name": "人工表单",
+    "type": "parallelNodeState",
+    "name": "并行",
     "uniqueName": ""
   }
 ]

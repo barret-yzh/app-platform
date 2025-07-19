@@ -722,6 +722,16 @@ public class AippConst {
     public static final String BS_CHAT_ID = "chatId";
 
     /**
+     * business中的原始会话的id的key，用于应用之间@的场景.
+     */
+    public static final String BS_ORIGIN_CHAT_ID = "originChatId";
+
+    /**
+     * business中的原始应用版本的id的key，用于应用之间@的场景.
+     */
+    public static final String BS_ORIGIN_APP_ID = "originAppId";
+
+    /**
      * aippId
      */
     public static final String AIPP_ID = "aippId";
@@ -759,16 +769,52 @@ public class AippConst {
      */
     public static final String BUSINESS_INFOS_KEY = "infos";
 
+    /**
+     * mcp server key
+     */
+    public static final String MCP_SERVER_KEY = "mcpServer";
+
+    /**
+     * mcp servers key
+     */
+    public static final String MCP_SERVERS_KEY = "mcpServers";
+
+    /**
+     * mcp server url key
+     */
+    public static final String MCP_SERVER_URL_KEY = "url";
+
+    /**
+     * mcp server type
+     */
+    public static final String MCP_SERVER_TYPE = "mcp";
+
+    /**
+     * store server type
+     */
+    public static final String STORE_SERVER_TYPE = "store";
+
+    /**
+     * store server name
+     */
+    public static final String STORE_SERVER_NAME = "store";
+
+    /**
+     * tool real name
+     */
+    public static final String TOOL_REAL_NAME = "toolRealName";
+
+    /**
+     * tools key
+     */
+    public static final String TOOLS_KEY = "tools";
+
     // *** aipp initial static meta items ***
     /**
      * aipp initial static meta items
      */
-    public static final List<FormMetaItem> STATIC_META_ITEMS =
-            Collections.unmodifiableList(Arrays.asList(new FormMetaItem(INST_NAME_KEY,
-                            "meta实例名称",
-                            "TEXT",
-                            STRING_LEN,
-                            null),
+    public static final List<FormMetaItem> STATIC_META_ITEMS = Collections.unmodifiableList(Arrays.asList(
+                    new FormMetaItem(INST_NAME_KEY, "meta实例名称", "TEXT", STRING_LEN, null),
                     new FormMetaItem(INST_CREATOR_KEY, "创建人", "TEXT", STRING_LEN, null),
                     new FormMetaItem(INST_CREATE_TIME_KEY, "创建时间", "DATETIME", null, null),
                     new FormMetaItem(INST_MODIFY_BY_KEY, "更新人", "TEXT", STRING_LEN, null),

@@ -57,6 +57,10 @@
             <groupId>modelengine.fit.jade.service</groupId>
             <artifactId>voice-service</artifactId>
         </dependency>
+        <dependency>
+            <groupId>modelengine.jade.service</groupId>
+            <artifactId>app-engine-base-service</artifactId>
+        </dependency>
 
         <!-- Test -->
         <dependency>

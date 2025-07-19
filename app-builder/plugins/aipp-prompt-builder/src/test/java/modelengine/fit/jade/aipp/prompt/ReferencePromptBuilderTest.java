@@ -51,7 +51,7 @@ import java.util.Optional;
 public class ReferencePromptBuilderTest {
     @Fit
     private PromptBuilder promptBuilder;
-    private final ObjectSerializer jsonSerializer = new JacksonObjectSerializer(null, null, null);
+    private final ObjectSerializer jsonSerializer = new JacksonObjectSerializer(null, null, null, true);
 
     @Mock
     private LocaleService localeService;
@@ -107,7 +107,7 @@ public class ReferencePromptBuilderTest {
         List<String> refIds = ReferenceUtil.getReferenceIds(promptMessage);
         assertThat(refIds).hasSize(3);
         assertThat(promptMessage.getSystemMessage()).contains("# 人设与回复逻辑",
-                "<ref>{引用ID}</ref>",
+                "<ref>引用ID</ref>",
                 StringUtils.format("参考文献:\n[{0}] text0\n[{1}] text1\n[{2}] text2\n",
                         refIds.get(0), refIds.get(1), refIds.get(2)));
         assertThat(promptMessage.getHumanMessage()).isEqualTo("template value0");
@@ -127,7 +127,7 @@ public class ReferencePromptBuilderTest {
         List<String> refIds = ReferenceUtil.getReferenceIds(promptMessage);
         assertThat(refIds).hasSize(3);
         assertThat(promptMessage.getSystemMessage()).contains("# Personal setting and recovering Logic",
-                "<ref>{reference ID}</ref>",
+                "<ref>reference ID</ref>",
                 StringUtils.format("Reference:\n[{0}] text0\n[{1}] text1\n[{2}] text2\n",
                         refIds.get(0), refIds.get(1), refIds.get(2)));
         assertThat(promptMessage.getHumanMessage()).isEqualTo("template value0");

@@ -30,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Timestamp;
+import java.util.TimeZone;
 
 /**
  * 表示 {@link EdmKnowledgeBaseManager} 的测试集
@@ -64,6 +65,7 @@ public class EdmKnowledgeBaseManagerTest {
     @Test
     @DisplayName("查询知识库列表成功")
     public void shouldOkWhenListRepo() {
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
         ListKnowledgeQueryParam param = new ListKnowledgeQueryParam();
         param.setName("ok");
         EdmListRepoEntity entity = manager.listRepos(param);
@@ -76,8 +78,8 @@ public class EdmKnowledgeBaseManagerTest {
                                 "lxh-2",
                                 "description",
                                 "VECTOR",
-                                Timestamp.valueOf("2024-09-26 16:16:21.054")),
-                        tuple(1L, "lxh-k", "", "VECTOR", Timestamp.valueOf("2024-09-26 12:12:14.320")));
+                                Timestamp.valueOf("2024-09-26 08:16:21.054")),
+                        tuple(1L, "lxh-k", "", "VECTOR", Timestamp.valueOf("2024-09-26 04:12:14.320")));
     }
 
     @Test

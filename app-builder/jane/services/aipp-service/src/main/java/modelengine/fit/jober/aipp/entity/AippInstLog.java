@@ -49,9 +49,6 @@ public class AippInstLog {
     @Property(description = "aipp version")
     private String version;
 
-    /**
-     * {@link modelengine.fit.jober.aipp.enums.AippTypeEnum}字面值
-     */
     @Property(description = "aipp type(NORMAL/PREVIEW)")
     private String aippType;
 

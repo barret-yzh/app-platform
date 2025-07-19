@@ -48,7 +48,7 @@ import java.util.Map;
  * @since 2024-12-12
  */
 @Component
-@RequestMapping(path = "/v1/tenants/{tenantId}/chats", group = "应用对话管理接口")
+@RequestMapping(path = "/api/app/v1/tenants/{tenantId}/chats", group = "应用对话管理接口")
 public class AppChatController extends AbstractController {
     private final AppChatServiceAdapter appChatService;
     private final AippChatServiceAdapter aippChatService;
@@ -101,7 +101,6 @@ public class AppChatController extends AbstractController {
     @CarverSpan(value = "operation.appChat.restartChat")
     @PostMapping(path = "/instances/{currentInstanceId}", summary = "重新对话",
             description = "该接口可以重新发起指定会话，需要指定需要重新发起会话的实例id，同时可添加附加信息")
-    @ResponseStatus(HttpResponseStatus.RESET_CONTENT)
     public Choir<Object> restartChat(HttpClassicServerRequest httpRequest,
             @PathVariable("tenantId") @Property(description = "租户的唯一标识符") String tenantId,
             @PathVariable("currentInstanceId") @Property(description = "需要重新发起会话的实例的唯一标识符")

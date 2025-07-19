@@ -22,6 +22,7 @@ import modelengine.fit.jade.tool.SyncToolCall;
 import modelengine.fitframework.log.Logger;
 import modelengine.fitframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -123,13 +124,12 @@ public class BatchRequest {
                         task.getIndex());
 
                 this.doingToolCallTasks.put(task.getIndex(), task);
-                Map<String, Object> toolArgs = task.getToolCall()
-                        .getArgs()
-                        .stream()
-                        .collect(Collectors.toMap(Argument::getName, Argument::getValue));
+                String jsonArgs = JSONObject.toJSONString(task.getToolCall().getArgs(),
+                        SerializerFeature.WriteMapNullValue);
                 this.complete(task,
                         JSONArray.parse(this.syncToolCall.call(task.getToolCall().getUniqueName(),
-                                JSONObject.toJSONString(toolArgs, SerializerFeature.WriteMapNullValue))));
+                                jsonArgs,
+                                new HashMap<>())));
             } catch (Throwable ex) {
                 this.setException(task, ex);
             } finally {

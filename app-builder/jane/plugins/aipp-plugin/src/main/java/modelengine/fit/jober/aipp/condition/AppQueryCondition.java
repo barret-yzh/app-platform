@@ -29,7 +29,6 @@ public class AppQueryCondition {
 
     @RequestParam(name = "type", required = false, defaultValue = "app")
     private String type;
-
     private List<String> ids;
 
     @RequestParam(name = "name", required = false)
@@ -40,11 +39,14 @@ public class AppQueryCondition {
 
     @RequestParam(name = "app_category", required = false)
     private String appCategory;
-
     private List<String> excludeNames;
+    private String appSuiteId;
+    private String orderBy;
+    private String sort;
+    private Long offset;
+    private Integer limit;
 
     @RequestParam(name = "app_type", required = false)
     private String appType;
-
     private String createBy;
 }

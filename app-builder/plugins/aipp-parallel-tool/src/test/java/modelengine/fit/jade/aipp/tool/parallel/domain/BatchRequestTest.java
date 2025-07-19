@@ -25,6 +25,7 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,9 +48,9 @@ class BatchRequestTest {
 
     @Test
     void shouldCallExecutorByConcurrencyWhenPostGivenToolCall() {
-        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new ArrayList<>()).build(),
-                ToolCall.builder().uniqueName("u2").args(new ArrayList<>()).build(),
-                ToolCall.builder().uniqueName("u3").args(new ArrayList<>()).build());
+        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new HashMap<>()).build(),
+                ToolCall.builder().uniqueName("u2").args(new HashMap<>()).build(),
+                ToolCall.builder().uniqueName("u3").args(new HashMap<>()).build());
         Config config = Config.builder().concurrency(2).build();
         Mockito.doNothing().when(this.taskExecutor).post(Mockito.any());
 
@@ -67,10 +68,10 @@ class BatchRequestTest {
     @Test
     void shouldGetResultWhenAwaitGivenToolCallSuccessfully() {
         List<ToolCall> toolCalls =
-                Arrays.asList(ToolCall.builder().uniqueName("u1").args(new ArrayList<>()).outputName("1").build(),
+                Arrays.asList(ToolCall.builder().uniqueName("u1").args(new HashMap<>()).outputName("1").build(),
                         ToolCall.builder()
                                 .uniqueName("u2")
-                                .args(Collections.singletonList(Argument.builder().name("a").value(1).build()))
+                                .args(MapBuilder.<String, Object>get().put("a", 1).build())
                                 .outputName("2")
                                 .build());
         Config config = Config.builder().concurrency(1).build();
@@ -80,10 +81,12 @@ class BatchRequestTest {
             return null;
         }).when(this.taskExecutor).post(Mockito.any());
         Mockito.when(this.aippInstanceStatus.isRunning(Mockito.any())).thenReturn(true);
-        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(0).getUniqueName()), Mockito.eq("{}")))
-                .thenReturn("1");
-        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(1).getUniqueName()), Mockito.eq("{\"a\":1}")))
-                .thenReturn("\"2\"");
+        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(0).getUniqueName()),
+                Mockito.eq("{}"),
+                Mockito.any())).thenReturn("1");
+        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(1).getUniqueName()),
+                Mockito.eq("{\"a\":1}"),
+                Mockito.any())).thenReturn("\"2\"");
 
         BatchRequest batchRequest = new BatchRequest(toolCalls,
                 config,
@@ -104,8 +107,8 @@ class BatchRequestTest {
 
     @Test
     void shouldThrowExceptionWhenAwaitGivenToolCallException() {
-        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new ArrayList<>()).build(),
-                ToolCall.builder().uniqueName("u2").args(new ArrayList<>()).build());
+        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new HashMap<>()).build(),
+                ToolCall.builder().uniqueName("u2").args(new HashMap<>()).build());
         Config config = Config.builder().concurrency(1).build();
         Mockito.doAnswer((Answer<Void>) invocation -> {
             Runnable runnable = invocation.getArgument(0);
@@ -113,7 +116,9 @@ class BatchRequestTest {
             return null;
         }).when(this.taskExecutor).post(Mockito.any());
         Mockito.when(this.aippInstanceStatus.isRunning(Mockito.any())).thenReturn(true);
-        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(0).getUniqueName()), Mockito.eq("{}")))
+        Mockito.when(this.syncToolCall.call(Mockito.eq(toolCalls.get(0).getUniqueName()),
+                        Mockito.eq("{}"),
+                        Mockito.any()))
                 .thenThrow(new IllegalArgumentException("wrong argument"));
 
         BatchRequest batchRequest = new BatchRequest(toolCalls,
@@ -130,15 +135,15 @@ class BatchRequestTest {
 
     @Test
     void shouldNotExecuteRemainToolWhenAwaitGivenInstanceNotRunning() {
-        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new ArrayList<>()).build(),
-                ToolCall.builder().uniqueName("u2").args(new ArrayList<>()).build());
+        List<ToolCall> toolCalls = Arrays.asList(ToolCall.builder().uniqueName("u1").args(new HashMap<>()).build(),
+                ToolCall.builder().uniqueName("u2").args(new HashMap<>()).build());
         Config config = Config.builder().concurrency(1).build();
         Mockito.doAnswer((Answer<Void>) invocation -> {
             Runnable runnable = invocation.getArgument(0);
             runnable.run();
             return null;
         }).when(this.taskExecutor).post(Mockito.any());
-        Mockito.when(this.syncToolCall.call(Mockito.any(), Mockito.any())).thenReturn("1");
+        Mockito.when(this.syncToolCall.call(Mockito.any(), Mockito.any(), Mockito.any())).thenReturn("1");
         Map<String, Object> context = MapBuilder.<String, Object>get().put("instanceId", "1").build();
         Mockito.when(this.aippInstanceStatus.isRunning(Mockito.same(context))).thenReturn(true).thenReturn(false);
 
@@ -152,7 +157,7 @@ class BatchRequestTest {
         IllegalStateException exception = Assertions.assertThrows(IllegalStateException.class, batchRequest::await);
 
         Mockito.verify(this.taskExecutor, Mockito.times(2)).post(Mockito.any());
-        Mockito.verify(this.syncToolCall, Mockito.times(1)).call(Mockito.any(), Mockito.any());
+        Mockito.verify(this.syncToolCall, Mockito.times(1)).call(Mockito.any(), Mockito.any(), Mockito.any());
         Assertions.assertTrue(exception.getMessage()
                 .endsWith("errorMessage=The instance is not running. [context={instanceId=1}]]"));
     }

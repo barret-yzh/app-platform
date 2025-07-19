@@ -16,7 +16,7 @@
   },
   {
     "type": "intelligentFormNodeState",
-    "name": "Intelligent Form",
+    "name": "Form",
     "uniqueName": ""
   },
   {
@@ -70,8 +70,8 @@
     "uniqueName": ""
   },
   {
-    "type": "manualCheckNodeState",
-    "name": "Manual Form",
+    "type": "parallelNodeState",
+    "name": "Parallel",
     "uniqueName": ""
   }
 ]

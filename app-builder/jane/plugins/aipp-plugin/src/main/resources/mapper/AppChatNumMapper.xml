@@ -9,4 +9,8 @@
     <update id="minusOne">
         update app_chat_num set chat_num=chat_num - 1 where app_id=#{appId} and chat_mode=#{chatMode}
     </update>
+
+    <update id="clearNum">
+        update app_chat_num set chat_num=0
+    </update>
 </mapper>
