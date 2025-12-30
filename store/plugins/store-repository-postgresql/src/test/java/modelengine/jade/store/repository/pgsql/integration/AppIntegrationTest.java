@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fitframework.annotation.Fit;
 import modelengine.fitframework.test.annotation.IntegrationTest;
 import modelengine.fitframework.test.annotation.Mock;
@@ -42,7 +43,7 @@ import java.util.Map;
  * @since 2024-09-19
  */
 @IntegrationTest(scanPackages = "modelengine.jade.store")
-@Sql(scripts = {"sql/create/app.sql", "sql/create/tag.sql"})
+@Sql(before = {"sql/create/app.sql", "sql/create/tag.sql"})
 @DisplayName("App 集成测试")
 public class AppIntegrationTest {
     @Fit
@@ -53,13 +54,18 @@ public class AppIntegrationTest {
 
     @Mock
     private ToolService toolService;
+
     @Mock
     private ToolGroupService toolGroupService;
+
     @Mock
     private DefinitionGroupService defGroupService;
 
+    @Mock
+    private DomainDivisionService domainDivisionService;
+
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试添加应用-添加")
     void shouldOkWhenAddAppByAdd() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();
@@ -78,7 +84,7 @@ public class AppIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试添加应用-更新")
     void shouldOkWhenAddAppByUpdate() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();
@@ -96,7 +102,7 @@ public class AppIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试获取应用")
     void shouldOkWhenGetApp() {
         AppPublishData appData = this.mockAppPublishData();
@@ -107,18 +113,19 @@ public class AppIntegrationTest {
     }
 
     @Test
-    @Sql(scripts = {"sql/insert/app.sql", "sql/insert/tag.sql"})
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql", "sql/insert/tag.sql"})
     @DisplayName("测试获取应用集合")
     void shouldOkWhenGetApps() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();
         when(this.toolService.getTool(any())).thenReturn(this.mockAppPublishData());
+        when(this.domainDivisionService.getUserGroupId()).thenReturn("g1");
         ListResult<AppPublishData> apps = this.appService.getApps(appQuery);
         assertThat(apps.getCount()).isEqualTo(2);
-        assertThat(apps.getData().get(1).getTags()).isEqualTo(new HashSet<>(Arrays.asList("HUGGINGFACE", "FIT")));
+        assertThat(apps.getData().get(1).getTags()).isEqualTo(new HashSet<>(Arrays.asList("HUGGINGFACE")));
     }
 
     @Test
-    @Sql(scripts = "sql/insert/app.sql")
+    @Sql(before = {"sql/create/app.sql", "sql/create/tag.sql", "sql/insert/app.sql"})
     @DisplayName("测试删除应用")
     void shouldOkWhenDeleteApp() {
         AppQuery appQuery = new AppQuery.Builder().appCategory("chatbot").build();

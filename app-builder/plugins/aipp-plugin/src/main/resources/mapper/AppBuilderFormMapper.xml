@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modelengine.fit.jober.aipp.mapper.AppBuilderFormMapper">
+    <resultMap id="BaseResultMap" type="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="type" property="type"/>
+        <result column="appearance" property="appearance"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_at" property="createAt"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_at" property="updateAt"/>
+        <result column="version" property="version"/>
+        <result column="form_suite_id" property="formSuiteId"/>
+        <result column="user_group_id" property="userGroupId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, name, tenant_id, appearance, type, create_by, create_at, update_by, update_at, version, form_suite_id, user_group_id
+    </sql>
+
+    <select id="selectWithId" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_form
+        where id = #{id} and is_deleted = 0
+    </select>
+
+    <select id="selectWithType" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_form
+        where type = #{type} and tenant_id = #{tenantId} and is_deleted = 0
+    </select>
+
+    <insert id="insertOne" parameterType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
+        insert into app_builder_form( <include refid="Base_Column_List"/> )
+        values (#{id}, #{name}, #{tenantId}, #{appearance}::jsonb, #{type}, #{createBy}, #{createAt}, #{updateBy},
+        #{updateAt}, #{version}, #{formSuiteId}, #{userGroupId})
+    </insert>
+
+    <update id="updateOne" parameterType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
+        update app_builder_form
+        <set>
+            <if test="name != null" >
+                name = #{name},
+            </if>
+            <if test="tenantId != null">
+                tenant_id = #{tenantId},
+            </if>
+            <if test="appearance != null" >
+                appearance = #{appearance}::jsonb,
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createAt != null">
+                create_at = #{createAt},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateAt != null">
+                update_at = #{updateAt}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="delete" parameterType="java.util.List">
+        UPDATE app_builder_form
+        set is_deleted = 1
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="countWithType" resultType="long">
+        select count(*)
+        from app_builder_form
+        where type = #{type} and tenant_id = #{tenantId} and is_deleted = 0
+    </select>
+
+    <select id="selectWithName" resultType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_form
+        where name = #{name} and tenant_id = #{tenantId} and is_deleted = 0
+    </select>
+
+    <select id="selectWithCondition" resultMap="BaseResultMap" resultType="modelengine.fit.jober.aipp.po.AppBuilderFormPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_form where is_deleted = 0
+        <if test="cond.tenantId != null">
+            and tenant_id = #{cond.tenantId}
+        </if>
+        <if test="cond.userGroupId == null and cond.createBy != null">
+            and create_by = #{cond.createBy}
+        </if>
+        <if test='cond.userGroupId != null'>
+            and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
+        </if>
+        <if test="cond.type != null">
+            and type = #{cond.type}
+        </if>
+        <if test="cond.id != null">
+            and id = #{cond.id}
+        </if>
+        <if test="cond.name != null">
+            and name LIKE '%' || #{cond.name} || '%'
+        </if>
+        <if test="cond.excludeNames != null and cond.excludeNames.size() > 0">
+            and name NOT IN
+            <foreach item="excludeName" collection="cond.excludeNames" open="(" separator="," close=")">
+                #{excludeName}
+            </foreach>
+        </if>
+        ORDER BY update_at DESC, create_at DESC
+        <if test="cond.offset != null and cond.limit != null">
+            LIMIT #{cond.limit} OFFSET #{cond.offset}
+        </if>
+    </select>
+
+    <select id="countWithCondition" resultType="long">
+        select count(*)
+        from app_builder_form where is_deleted = 0
+        <if test="cond.tenantId != null">
+            and tenant_id = #{cond.tenantId}
+        </if>
+        <if test="cond.userGroupId == null and cond.createBy != null">
+            and create_by = #{cond.createBy}
+        </if>
+        <if test='cond.userGroupId != null'>
+            and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
+        </if>
+        <if test="cond.type != null">
+            and type = #{cond.type}
+        </if>
+        <if test="cond.id != null">
+            and id = #{cond.id}
+        </if>
+        <if test="cond.name != null">
+            and name LIKE '%' || #{cond.name} || '%'
+        </if>
+        <if test="cond.excludeNames != null and cond.excludeNames.size() > 0">
+            and name NOT IN
+            <foreach item="excludeName" collection="cond.excludeNames" open="(" separator="," close=")">
+                #{excludeName}
+            </foreach>
+        </if>
+    </select>
+</mapper>

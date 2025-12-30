@@ -21,6 +21,7 @@ import modelengine.fit.http.entity.Entity;
 import modelengine.fit.http.entity.FileEntity;
 import modelengine.fit.http.entity.NamedEntity;
 import modelengine.fit.http.entity.support.DefaultNamedEntity;
+import modelengine.fit.jade.aipp.domain.division.service.DomainDivisionService;
 import modelengine.fit.serialization.json.jackson.JacksonObjectSerializer;
 import modelengine.fitframework.exception.FitException;
 import modelengine.fitframework.serialization.ObjectSerializer;
@@ -86,6 +87,8 @@ public class PluginUploadServiceImplTest {
     private ToolGroupService mockToolGroupService;
     private PluginUploadServiceImpl pluginUploadService;
     private PluginUploadConstraintConfig pluginUploadConstraintConfig;
+    @Mock
+    private DomainDivisionService domainDivisionService;
 
     private PluginData mockPluginData() {
         final PluginData pluginData = new PluginData();
@@ -130,7 +133,8 @@ public class PluginUploadServiceImplTest {
                 this.pluginUploadConstraintConfig,
                 this.mockProcessorFactory,
                 this.mockDefGroupService,
-                this.mockToolGroupService);
+                this.mockToolGroupService,
+                this.domainDivisionService, true);
         Path testPath = Paths.get("/var/");
         try {
             FileUtils.ensureDirectory(testPath.toFile());
@@ -184,8 +188,8 @@ public class PluginUploadServiceImplTest {
     @DisplayName("当选择部分工具上传时，成功")
     void shouldOkWhenValidateSelectTools() {
         List<String> selectTools = Arrays.asList(
-                "defGroup-weather-Rain.implGroup-weather-Rain-A.rain_today.a_rain_today",
-                "defGroup-weather-Rain.implGroup-weather-Rain-A.rain_tomorrow.a_rain_today");
+                "defGroup_weather_Rain.implGroup_weather_rain_city_a.rain_today.city_a_rain_tomorrow",
+                "defGroup_weather_Rain.implGroup_weather_rain_city_b.rain_tomorrow.city_b_rain_tomorrow");
         ToolProcessor toolProcessor = new ToolProcessor(this.serializer);
         DefinitionProcessor defProcessor = new DefinitionProcessor(this.serializer);
         ToolJsonEntity toolJsonEntity = getFileInfo(new File(NEW_TOOL_JSON), serializer, ToolJsonEntity.class);

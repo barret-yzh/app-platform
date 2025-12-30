@@ -16,6 +16,12 @@ jane:
       scheduleRate: 10000
       maxCount: 0
     isNeedFlowCallbackAdapt: false
-    contextExpiredDays: 1
 
 distributed-lock-provider: databaseDistributedLockProvider
+
+modelengine:
+  tenantId:
+  ownTrace: false
+  useLimit: true
+  limit: 2
+  operator:

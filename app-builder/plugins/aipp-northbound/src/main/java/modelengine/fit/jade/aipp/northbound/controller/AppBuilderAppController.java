@@ -8,15 +8,15 @@ package modelengine.fit.jade.aipp.northbound.controller;
 
 import static modelengine.fitframework.inspection.Validation.notNull;
 
-import modelengine.fit.jane.task.gateway.Authenticator;
-
 import modelengine.fit.http.annotation.GetMapping;
 import modelengine.fit.http.annotation.PathVariable;
 import modelengine.fit.http.annotation.RequestBean;
 import modelengine.fit.http.annotation.RequestMapping;
 import modelengine.fit.http.server.HttpClassicServerRequest;
+import modelengine.fit.jade.aipp.domain.division.annotation.GetSource;
 import modelengine.fit.jane.common.controller.AbstractController;
 import modelengine.fit.jane.common.response.Rsp;
+import modelengine.fit.jane.task.gateway.Authenticator;
 import modelengine.fit.jober.aipp.dto.AppBuilderAppDto;
 import modelengine.fit.jober.aipp.dto.chat.AppMetadata;
 import modelengine.fit.jober.aipp.dto.chat.AppQueryParams;
@@ -74,6 +74,7 @@ public class AppBuilderAppController extends AbstractController {
      */
     @GetMapping(summary = "查询用户应用列表",
             description = "该接口可以使用指定条件筛选用户应用列表，如应用id、查询的应用名字和状态等.")
+    @GetSource
     public Rsp<RangedResultSet<AppMetadata>> list(HttpClassicServerRequest httpRequest,
             @PathVariable("tenantId") @Property(description = "租户的唯一标识符") String tenantId,
             @RequestBean AppQueryParams cond) {
@@ -88,7 +89,7 @@ public class AppBuilderAppController extends AbstractController {
      * @param appId 表示待查询应用的唯一标识符的 {@link String}。
      * @return 表示应用配置详情的 {@link Rsp}{@code <}{@link AppBuilderAppDto}{@code >}。
      */
-    @GetMapping(value = "/{appId}/config", summary = "查询应用配置详情",
+    @GetMapping(path = "/{appId}/config", summary = "查询应用配置详情",
             description = "该接口可以通过待查询应用的唯一标识符来查询指定应用的配置详情。")
     public Rsp<AppBuilderAppDto> query(HttpClassicServerRequest httpRequest,
             @PathVariable("tenantId") @Property(description = "租户的唯一标识符") String tenantId,

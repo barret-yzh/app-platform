@@ -23,6 +23,7 @@ import modelengine.fitframework.util.CollectionUtils;
 import modelengine.fitframework.util.StringUtils;
 import modelengine.jade.common.exception.ModelEngineException;
 import modelengine.jade.store.code.PluginRetCode;
+import modelengine.jade.store.entity.aop.DeployPluginValidation;
 import modelengine.jade.store.entity.query.PluginQuery;
 import modelengine.jade.store.entity.transfer.PluginData;
 import modelengine.jade.store.entity.transfer.PluginToolData;
@@ -121,7 +122,13 @@ public class DefaultPluginDeployService implements PluginDeployService, FitRunti
     }
 
     @Override
+    @DeployPluginValidation
     public void deployPlugins(List<String> toDeployPluginIds) {
+        if (toDeployPluginIds.size() > this.pluginDeployQueryConfig.getMaxToolSize()) {
+            throw new ModelEngineException(PluginRetCode.PLUGIN_DEPLOY_FAILED,
+                    StringUtils.format("The number of plugin deployments exceeds the limit'. [number={0}]",
+                            this.pluginDeployQueryConfig.getMaxToolSize()));
+        }
         this.validatePluginIds(toDeployPluginIds);
         List<PluginData> deployedPlugins = this.pluginService.getPlugins(DeployStatus.DEPLOYED);
         List<String> deployedPluginIds = deployedPlugins.stream()

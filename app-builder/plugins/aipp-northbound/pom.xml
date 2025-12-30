@@ -42,11 +42,11 @@
 
         <!-- Services -->
         <dependency>
-            <groupId>modelengine.fit.jane</groupId>
+            <groupId>modelengine.fit.jade</groupId>
             <artifactId>aipp-genericable</artifactId>
         </dependency>
         <dependency>
-            <groupId>modelengine.fit.jane</groupId>
+            <groupId>modelengine.fit.jade</groupId>
             <artifactId>aipp-service</artifactId>
         </dependency>
         <dependency>
@@ -60,6 +60,10 @@
         <dependency>
             <groupId>modelengine.jade.service</groupId>
             <artifactId>app-engine-base-service</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>modelengine.jade.service</groupId>
+            <artifactId>aipp-domain-division-service</artifactId>
         </dependency>
 
         <!-- Test -->

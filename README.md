@@ -25,11 +25,83 @@
 
 ---------
 
-## 安装数据库
+## 快速启动
 
-### Windows 系统
+### 1. 前置条件
 
-- 下载并安装 [PostgresSQL](https://www.postgresql.org/download/)
+| 名称     | 规格                         |
+|--------|----------------------------|
+| CPU    | 2+ 核心                      |
+| CPU 架构 | x86                        |
+| 内存     | 4+ GB                      |
+| 软件     | 安装 Docker & Docker Compose |
+
+### 2. Docker Compose 启动（拉取镜像以及启动服务时间大约 3 minutes）
+克隆项目并进入项目根目录，执行以下命令：/ Clone the repository and enter the project root directory, then run the following commands:
+```shell
+# 用户按需配置环境变量，例如模型名称、基础 URL 和 APIKEY等 / Configure environment variables as needed, including model name, base URL and APIKEY
+cp docker/.env.example docker/.env
+bash docker/deploy.sh
+```
+> 容器全部 Running 后，浏览器打开 http://localhost:8001 体验
+
+> 如需修改数据库密码，二次启动前需要删除`docker/app-platform-tmp`目录
+
+## 后端快速开发测试
+本章节给出快速启动之后，本地快速开发测试的方法。
+
+### 1. 编译代码
+1.1. 全量编译（2 minutes 30 seconds）
+编写代码，在项目根目录下，执行以下命令编译：
+```shell
+mvn clean install
+```
+
+1.2. 增量编译（10 seconds）
+编写代码，在修改的插件目录下，执行以下命令编译：
+```shell
+mvn clean install
+```
+
+### 2. 一键部署修改
+在项目根目录下，执行以下命令快速部署（3 minutes 30 seconds）：
+```shell
+bash docker/dev-app-builder.sh
+```
+
+### 3. 测试
+浏览器打开 http://localhost:8001 测试
+
+## 前端快速开发测试
+本章节给出快速启动之后，本地快速开发测试前端的方法。
+
+### 1. 编译代码
+1. 全量编译前端（1 minutes 10 seconds）
+编写代码，在项目根目录下，执行以下命令编译：
+```shell
+cd frontend
+npm install --legacy-peer-deps --force --registry=https://registry.npmmirror.com
+npm run build:prod
+```
+
+### 2. 一键部署修改
+在项目根目录下，执行以下命令快速部署（18 seconds）：
+```shell
+cd ..
+bash docker/dev-frontend.sh
+```
+
+### 3. 测试
+浏览器打开 http://localhost:8001 测试
+
+
+## 源码编译启动
+
+### 安装数据库
+
+#### Windows 系统
+
+- 下载并安装 [PostgresSQL](https://www.postgresql.org/download/) （**支持版本 ≥ 14**）
 - 初始化数据。进入 `shell` 目录，使用 `bash` 工具执行 `build_win.sh`（当前不支持 `cmd` 执行，待规划）：
 
 ```
@@ -39,11 +111,11 @@ sh build_win.sh ${ip} ${port} ${username} ${password}
 
 其中参数 ip、port、username、password 分别指的是数据库主机地址、数据库端口、数据用户名、数据库密码。该文件会初始化数据库内置数据，以及人工表单功能所需的数据。
 
-### Linux 系统
+#### Linux 系统
 
 待规划
 
-## 后端环境配置
+### 后端环境配置
 
 开发环境配置
 
@@ -69,6 +141,15 @@ build/
 
 需要将输出目录与 FIT 框架的编译产物结合。将输出目录的 `plugins` 目录下的所有文件复制到框架输出目录的 `plugins` 下，将 `shared` 目录下的所有文件复制到框架输出目录的 `shared` 下。
 
+另外，需要删除 `plugins` 目录中如下开头的文件（`app-platform` 仓扩展了这些机制，已经存在对应的实现。否则会由于存在冲突导致启动失败）
+
+```text
+fel-tool-discoverer
+fel-tool-executor
+fel-tool-repository-simple
+fel-tool-factory-repository
+```
+
 > 后端模块基于 [FIT](https://ModelEngine-Group/fit-framework) 框架，启动方式采用了 [FIT 动态插件](https://github.com/ModelEngine-Group/fit-framework/blob/main/docs/framework/fit/java/quick-start-guide/03.%20%E4%BD%BF%E7%94%A8%E6%8F%92%E4%BB%B6%E7%9A%84%E7%83%AD%E6%8F%92%E6%8B%94%E8%83%BD%E5%8A%9B.md) 方式。
 
 打开框架输出目录的 `conf/fitframework.yml` 文件，找到如下配置项
@@ -79,6 +160,21 @@ fit:
     packages:
     - 'modelengine.fitframework'
     - 'modelengine.fit'
+```
+
+配置本地智能表单路径，首先创建目录`.\app-builder\smart_form` 此目录可根据实际情况修改，然后copy项目中的
+`example\app-demo\normal-form`及`smart-form`中的所有内容到上述目录，打包`template`目录内容`template.zip`
+并复制到`smart-form` 结果如下所示：
+```yml
+app-builder/
+├── smart_form/
+│   ├── 6befc536-7e6d-48b5-8dcb-1c4d04ca4e92
+│   ├── 17b732c9-5272-42a6-a79d-8d0334a8aa19
+│   ├── 7958d851-8062-49bd-b21e-d7372991c905
+│   ├── b6255699-2e4f-409f-a578-b87b7435e389
+│   ├── e85bd769-0212-4305-b56b-01e77faa14ff
+│   ├── temporary
+│   └── template.zip
 ```
 
 加入数据库配置项，修改后的配置项如下所示：
@@ -102,48 +198,52 @@ fit:
               minIdle: ${midIdle} # 将 minIdle 替换为连接池的最小空闲连接数。
               maxActive: ${maxActive} # 将 maxActive 替换为数据库连接池的最大活动连接数。
               # 可根据具体需求，添加连接池所需配置项。
+app-engine:
+   resource:
+      path: ${localFormPath} # 配置本地的智能表单根路径，win下如 D:\\app-builder\\
+   form:
+      path-prefix: ${localFormPath} # 配置本地的智能表单根路径，win下如 D:\\app-builder\\
+
+
+
 ```
 
 **启动命令**
 
+在框架输出目录的 `bin` 目录下执行启动命令
+
 ```
-fit start -Dfit.profiles.active=prod
+fit start
 ```
 
 > 这里直接使用了 `fit` 命令，该命令请参考 `fit-framework` 项目的[指导手册](https://github.com/ModelEngine-Group/fit-framework/blob/main/docs/framework/fit/java/quick-start-guide/03.%20%E4%BD%BF%E7%94%A8%E6%8F%92%E4%BB%B6%E7%9A%84%E7%83%AD%E6%8F%92%E6%8B%94%E8%83%BD%E5%8A%9B.md)。
 > 
-> 当前，`app-platform` 使用了 `fit` 的 3.5.0-M4 版本，因此，如果采用手动编译，需要在 `fit-framework` 仓库中切换到 `v3.5.0-M4` 标签处进行编译构建操作。
+> 当前，`app-platform` 使用了 `fit` 的 3.5.5 版本，因此，如果采用手动编译，需要在 `fit-framework` 仓库中切换到 `v3.5.5` 标签处进行编译构建操作。
+
+**调试命令**
+
+```
+fit debug
+```
+
+> 这里的调试命令背后使用了 Java 内置的远程调试命令，通过该技术，可以在进程启动之后，在 `IDEA` 中绑定启动端口进行远程调试。
 
 ---------
 
-## 前端环境配置
+### 前端环境配置
 
 - 开发环境：`WebStorm`、`Visual Studio Code`
 
 - 环境要求：node.js  >= 20
 
-- ELSA 框架编译产物：参考 [ELSA](https://github.com/ModelEngine-Group/fit-framework/blob/main/framework/elsa/README.md) 的编译构建章节
-
-**修改 ELSA 依赖地址**
-
-进入目录 `app-engine\frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
-
-```
-"dependencies": {
-    "@fit-elsa/elsa-core": "file:${fitElsaCoreUrl}",
-    "@fit-elsa/elsa-react": "file:${fitElsaReactUrl}",
-```
-
-将 `${fitElsaCoreUrl}` 和 `${fitElsaReactUrl}` 分别改成 `ELSA` 框架编译产物 `fit-elsa-core` 和 `fit-react` 的目录地址即可。
-
 **修改代理文件**
 
-修改 `AppPlatform/frontend` 目录下的 `proxy.config.json` 文件，可以修改需要访问的后端地址。如本地后端地址是 `http://127.0.0.1:8080` 。可以按照如下示例配置：
+修改 `app-platform/frontend` 目录下的 `proxy.config.json` 文件，可以修改需要访问的后端地址。如本地后端地址是 `http://127.0.0.1:8080` 。可以按照如下示例配置：
 
 ```json
 {
     "/api": {
-       "target": "http://127.0.0.1:5520",
+       "target": "http://127.0.0.1:8080",
        "secure": false,
        "changeOrigin": true,
        "pathRewrite": {
@@ -156,14 +256,16 @@ fit start -Dfit.profiles.active=prod
 **依赖安装**
 
 ```
-cd app-engine/frontend/
+cd app-platform/frontend/
 npm install
 ```
 
 **打包构建**
 
+在 `package.json` 中定义了多种打包脚本，这里以 `build:single` 为例：
+
 ```
-npm run build
+npm run build:single
 ```
 
 **启动命令**
@@ -171,6 +273,23 @@ npm run build
 ```
 npm run start
 ```
+
+### 联调ELSA配置
+
+- ELSA 框架编译产物：参考 [ELSA](https://github.com/ModelEngine-Group/fit-framework/blob/main/framework/elsa/README.md) 的编译构建章节
+
+**修改 ELSA 依赖地址**
+
+进入目录 `app-platform/frontend` ，搜索 `package.json` 文件的 ELSA 依赖地址：
+
+```
+"dependencies": {
+    "@fit-elsa/elsa-core": "file:${fitElsaCoreUrl}",
+    "@fit-elsa/agent-flow": "file:${fitElsaReactUrl}",
+```
+
+将 `${fitElsaCoreUrl}` 和 `${fitElsaReactUrl}` 分别改成 `ELSA` 框架编译产物 `fit-elsa-core` 和 `fit-react` 的目录地址即可。
+
 ---------
 ## 快速开始
 
@@ -178,15 +297,15 @@ npm run start
 
 在对话中使用大模型功能，需要对模型进行配置，包括大模型的地址和鉴权信息。
 首先在首页的`应用市场`一栏中找到 `模型配置应用`，并点击该应用。点击右上角`创意灵感` 的`开始配置`，如下图所示：
-![image-20250508203127410](doc\images\readme\model_config_inspiration.png)
+![model_config_inspiration](docs/images/readme/model_config_inspiration.png)
 然后点击回答的 `添加模型` 按钮，输入模型名称、API Key 和模型地址，并点击确认。此时模型添加成功。
 
 **应用创建**
 
 在首页的`应用开发`一栏中点击`创建空白应用`。如下所示：
-![image-20250508204618312](doc\images\readme\app_create.png)
+![app_create](docs/images/readme/app_create.png)
 输入所要创建的应用名称和简介，并点击 `创建`按钮，即可创建 AI 应用。接着在跳转后的应用配置页面上，在 `大模型` 一栏中选择自定义配置的模型。此时即可在对话框进行对话。如下所示：
-![image-20250508205124203](doc\images\readme\app_chat.png)
+![app_chat](docs/images/readme/app_chat.png)
 
 ## 文档
 

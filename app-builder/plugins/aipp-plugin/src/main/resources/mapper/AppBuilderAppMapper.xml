@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="modelengine.fit.jober.aipp.mapper.AppBuilderAppMapper">
+    <resultMap id="BaseResultMap" type="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="app_suite_id" property="appSuiteId"/>
+        <result column="config_id" property="configId"/>
+        <result column="flow_graph_id" property="flowGraphId"/>
+        <result column="tenant_id" property="tenantId"/>
+        <result column="type" property="type"/>
+        <result column="version" property="version"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_at" property="createAt"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_at" property="updateAt"/>
+        <result column="attributes" property="attributes"/>
+        <result column="state" property="state"/>
+        <result column="app_built_type" property="appBuiltType"/>
+        <result column="app_category" property="appCategory"/>
+        <result column="app_type" property="appType"/>
+        <result column="is_active" property="isActive"/>
+        <result column="status" property="status"/>
+        <result column="unique_name" property="uniqueName"/>
+        <result column="publish_at" property="publishAt"/>
+        <result column="app_id" property="appId"/>
+        <result column="user_group_id" property="userGroupId"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id
+        , name, app_id, app_suite_id, config_id, flow_graph_id, tenant_id, type, version, attributes, path, state, app_built_type, app_category, create_by, create_at, update_by, update_at, is_active, status, unique_name, publish_at, app_type, user_group_id
+    </sql>
+
+    <sql id="appTypeCondition">
+        <choose>
+            <when test="cond.appType != null and cond.appType != ''">
+                app_type = #{cond.appType}
+            </when>
+            <when test="cond.type != null and cond.type == 'template'">
+                app_type is not null and app_type != ''
+            </when>
+            <otherwise>
+                1=1
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="selectWithId" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_app
+        where id = #{id}
+        and is_deleted = 0
+    </select>
+
+    <select id="selectWithPath" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_app
+        where path = #{path}
+        and state = 'active'
+        and is_deleted = 0
+        order by update_at desc
+        limit 1
+    </select>
+
+    <select id="selectByAppSuiteId" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_app
+        where app_suite_id = #{appSuiteId}
+        and is_deleted = 0
+    </select>
+
+    <select id="selectWithTenantId" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_app
+        where tenant_id = #{tenantId}
+        and is_deleted = 0
+    </select>
+
+    <select id="selectByTenantIdWithPage" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        select
+        <include refid="Base_Column_List"/>
+        from (
+            SELECT DISTINCT ON ( "name" ) * FROM app_builder_app where tenant_id = #{tenantId} and is_deleted = 0
+            <if test="cond.type != null">
+                and type = #{cond.type}
+            </if>
+            <if test="cond.appCategory != null">
+                and app_category = #{cond.appCategory}
+            </if>
+            <if test="cond.state != null">
+                <choose>
+                    <when test="cond.state == 'active'">
+                        and state = #{cond.state}
+                    </when>
+                    <when test="cond.state == 'inactive'">
+                        and state = #{cond.state}
+                        and (attributes ->> 'latest_version') is null
+                    </when>
+                </choose>
+            </if>
+            <if test="cond != null and cond.name != null and cond.name != ''">
+                and name ilike '%\' || #{cond.name} || '%' ESCAPE '\'
+            </if>
+            <if test="cond.ids != null and cond.ids.size() > 0">
+                and id in
+                <foreach collection="cond.ids" item="id" index="index" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="cond.excludeNames != null and !cond.excludeNames.isEmpty()">
+                AND name NOT IN
+                <foreach item="excludeName" collection="cond.excludeNames" open="(" separator="," close=")">
+                    #{excludeName}
+                </foreach>
+            </if>
+            <if test="cond.userGroupId == null and cond.createBy != null">
+                and create_by = #{cond.createBy}
+            </if>
+            <if test='cond.userGroupId != null'>
+                and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
+            </if>
+            ORDER BY
+                "name", update_at DESC
+        ) as sub
+        WHERE <include refid="appTypeCondition"/>
+        ORDER BY update_at DESC offset #{offset} limit #{limit}
+    </select>
+
+    <select id="selectWithCondition" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_app
+        <where>
+            true and is_deleted = 0
+            <if test="tenantId!=null">
+                and tenant_id = #{tenantId}
+            </if>
+            <if test="name!=null">
+                and name = #{name}
+            </if>
+            <if test="appSuiteId!=null">
+                and app_suite_id = #{appSuiteId}
+            </if>
+            <if test="type!=null">
+                and type = #{type}
+            </if>
+            <if test="ids != null and ids.size() > 0">
+                and id in
+                <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="appType != null and appType != ''">
+                and app_type = #{appType}
+            </if>
+            <if test="orderBy!=null and sort!=null">
+                ORDER BY ${orderBy} ${sort}
+            </if>
+            <if test="offset!=null and limit!=null">
+                offset #{offset} limit #{limit}
+            </if>
+        </where>
+    </select>
+
+    <select id="countByTenantId" resultType="long">
+        select count(*) from (
+        select
+        DISTINCT ON (name) *
+        from app_builder_app
+        where tenant_id = #{tenantId} and is_deleted = 0
+        <if test="cond.type != null">
+            and type = #{cond.type}
+        </if>
+        <if test="cond.state != null">
+            <choose>
+                <when test="cond.state == 'active'">
+                    and state = #{cond.state}
+                </when>
+                <when test="cond.state == 'inactive'">
+                    and state != 'active'
+                    and (attributes ->> 'latest_version') is null
+                </when>
+            </choose>
+        </if>
+        <if test="cond.name != null and cond.name != ''">
+            and name ilike '%\' || #{cond.name} || '%' ESCAPE '\'
+        </if>
+        <if test="cond.excludeNames != null and !cond.excludeNames.isEmpty()">
+            AND name NOT IN
+            <foreach item="excludeName" collection="cond.excludeNames" open="(" separator="," close=")">
+                #{excludeName}
+            </foreach>
+        </if>
+        <if test="cond.appCategory != null">
+            and app_category = #{cond.appCategory}
+        </if>
+        <if test="cond.userGroupId == null and cond.createBy != null">
+            and create_by = #{cond.createBy}
+        </if>
+        <if test='cond.userGroupId != null'>
+            and (user_group_id = #{cond.userGroupId} or user_group_id = '*')
+        </if>
+        ) as latest_records WHERE <include refid="appTypeCondition"/>;
+    </select>
+
+    <insert id="insertOne" parameterType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        insert into app_builder_app (
+        <include refid="Base_Column_List"/>
+        )
+        values (#{id}, #{name}, #{appId}, #{appSuiteId}, #{configId}, #{flowGraphId}, #{tenantId}, #{type}, #{version}, #{attributes}::jsonb,
+        #{path}, #{state}, #{appBuiltType}, #{appCategory}, #{createBy}, #{createAt}, #{updateBy}, #{updateAt}, #{isActive}, #{status}, #{uniqueName}, #{publishAt}, #{appType}, #{userGroupId})
+    </insert>
+
+    <update id="updateOne" parameterType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        update app_builder_app
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="appId != null">
+                app_id = #{appId},
+            </if>
+            <if test="appSuiteId != null">
+                app_suite_id = #{appSuiteId},
+            </if>
+            <if test="configId != null">
+                config_id = #{configId},
+            </if>
+            <if test="flowGraphId != null">
+                flow_graph_id = #{flowGraphId},
+            </if>
+            <if test="tenantId != null">
+                tenant_id = #{tenantId},
+            </if>
+            <if test="type != null">
+                type = #{type},
+            </if>
+            <if test="version != null">
+                version = #{version},
+            </if>
+            <if test="attributes != null">
+                attributes = #{attributes}::jsonb,
+            </if>
+            <if test="state != null">
+                state = #{state},
+            </if>
+            <if test="appBuiltType != null">
+                app_built_type = #{appBuiltType},
+            </if>
+            <if test="createBy != null">
+                create_by = #{createBy},
+            </if>
+            <if test="createAt != null">
+                create_at = #{createAt},
+            </if>
+            <if test="updateBy != null">
+                update_by = #{updateBy},
+            </if>
+            <if test="updateAt != null">
+                update_at = #{updateAt},
+            </if>
+            <if test="path != null">
+                path = #{path},
+            </if>
+            <if test="appType != null">
+                app_type = #{appType},
+            </if>
+            <if test="isActive != null">
+                is_active = #{isActive},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="uniqueName != null">
+                unique_name = #{uniqueName},
+            </if>
+            <if test="publishAt != null">
+                publish_at = #{publishAt}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="selectWithStoreId" resultMap="BaseResultMap"
+            resultType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        select
+        <include refid="Base_Column_List"/>
+        from app_builder_app
+        where attributes ->> 'store_id' in
+        <foreach collection="storeIds" item="id" index="index" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+        and is_deleted = 0
+    </select>
+
+    <update id="updateAppWithStoreId" parameterType="modelengine.fit.jober.aipp.po.AppBuilderAppPo">
+        update app_builder_app
+        set attributes = jsonb_set(attributes::jsonb, '{store_id}',to_jsonb(#{uniqueName}), true)
+        where id = #{id} and version = #{version}
+    </update>
+
+    <update id="delete" parameterType="java.util.List">
+        UPDATE app_builder_app
+        set is_deleted = 1
+        where id in
+        <foreach collection="appIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="selectWithSimilarName" resultType="java.lang.String">
+        SELECT DISTINCT name FROM app_builder_app WHERE name LIKE #{target}||'%' AND is_deleted = 0
+        ORDER BY name ASC
+    </select>
+
+    <select id="checkPathExists" resultType="boolean">
+        select count(*) > 0
+        from app_builder_app
+        where path = #{path}
+          and is_deleted = 0
+    </select>
+
+    <update id="updateGuestMode">
+        UPDATE app_builder_app
+        SET attributes = jsonb_set(
+        COALESCE(attributes::jsonb, '{}'::jsonb),
+        '{allow_guest}',
+        to_jsonb(#{isGuest}),
+        true
+        )::json
+        WHERE path = #{path}
+    </update>
+</mapper>
